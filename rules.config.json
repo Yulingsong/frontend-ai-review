@@ -1,0 +1,67 @@
+{
+  "version": "1.4.0",
+  "rules": {
+    "react": {
+      "exhaustive-deps": true,
+      "no-array-index-key": true,
+      "hooks-rule-of-hooks": true,
+      "no-direct-mutation-state": true,
+      "button-has-type": true,
+      "require-use-memo": true,
+      "dom-manipulation": true,
+      "jsx-key": true,
+      "no-redundant-async": true,
+      "fragment-shorthand": true,
+      "iframe-sandbox": true,
+      "img-alt": true
+    },
+    "vue": {
+      "v-for-key": true,
+      "no-mutating-props": true,
+      "no-side-effects-in-computed": true,
+      "v-if-with-v-for": true,
+      "require-default-prop": true,
+      "no-ref-as-reactivity": true,
+      "valid-template-root": true,
+      "require-emit-validator": true
+    },
+    "typescript": {
+      "no-any": true,
+      "no-unused-vars": true,
+      "prefer-optional-chain": true,
+      "prefer-nullish-coalescing": true,
+      "explicit-return": true,
+      "interface-name": true,
+      "no-implicit-any-catch": true,
+      "generic-naming": true
+    },
+    "security": {
+      "eval": true,
+      "hardcoded-credentials": true,
+      "inner-html": true,
+      "sql-injection": true,
+      "command-injection": true,
+      "weak-crypto": true,
+      "secret-in-url": true,
+      "console-credentials": true,
+      "url-redirection": true,
+      "cookie-security": true
+    },
+    "performance": {
+      "console-log": true,
+      "anonymous-function": true,
+      "array-push-in-loop": true,
+      "expensive-render": true,
+      "image-size": true,
+      "dead-code": true
+    },
+    "best-practice": {
+      "no-magic-numbers": true,
+      "empty-catch": true,
+      "no-var": true,
+      "prefer-const": true,
+      "require-await": true,
+      "consistent-return": true
+    }
+  }
+}
