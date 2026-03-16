@@ -1,13 +1,14 @@
 {
   "name": "frontend-ai-review",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "AI-powered code review tool for frontend developers",
   "main": "dist/index.js",
   "bin": {
-    "fair": "./dist/index.js"
+    "fair": "bin/fair"
   },
   "scripts": {
     "build": "tsc",
+    "prepublish": "npm run build",
     "start": "node dist/index.js",
     "dev": "ts-node src/index.ts"
   },

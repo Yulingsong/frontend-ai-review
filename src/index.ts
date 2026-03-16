@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * Frontend AI Review - Full Feature Implementation
  * 支持 LLM AI 分析、自动修复、GitHub Action
