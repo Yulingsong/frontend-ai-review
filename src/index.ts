@@ -22,7 +22,7 @@ interface CLIOptions {
   exclude: string[];
   rules?: string[];
   ai: boolean;
-  aiProvider: 'openai' | 'anthropic' | 'qwen';
+  aiProvider: string | 'anthropic' | 'qwen';
   aiModel: string;
   fix: boolean;
   help: boolean;
@@ -147,7 +147,7 @@ async function main() {
 
   if (opts.help) {
     console.log(`
-🤖 Frontend AI Review v1.2.0
+🤖 Frontend AI Review v1.5.0
 
 Usage: fair [options] [path]
 

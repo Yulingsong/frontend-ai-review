@@ -1,6 +1,6 @@
 {
   "name": "frontend-ai-review",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "AI-powered code review tool for frontend developers",
   "main": "dist/index.js",
   "bin": {
