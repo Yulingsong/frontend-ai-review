@@ -1,0 +1,46 @@
+name: Frontend AI Code Review
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  code-review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Frontend AI Review
+        run: |
+          npm install -g frontend-ai-review
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+      - name: Run Code Review
+        run: |
+          fair . -s warning -o github >> $GITHUB_OUTPUT
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+      - name: Add annotations
+        uses: actions/github-script@v7
+        if: always()
+        with:
+          script: |
+            const output = `${{ steps.review.outputs.results }}`;
+            if (output) {
+              const results = JSON.parse(output);
+              for (const item of results) {
+                core.warning(item.message, {
+                  file: item.path,
+                  line: item.line
+                });
+              }
+            }

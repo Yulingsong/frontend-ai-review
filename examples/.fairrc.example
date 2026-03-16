@@ -1,0 +1,12 @@
+{
+  "severity": "warning",
+  "output": "text",
+  "exclude": [
+    "node_modules/**",
+    "dist/**",
+    "build/**",
+    ".next/**",
+    "coverage/**"
+  ],
+  "category": ["react", "vue", "typescript", "security"]
+}
