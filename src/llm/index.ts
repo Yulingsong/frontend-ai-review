@@ -2,13 +2,16 @@
 
 import type { LLMResponse } from '../types/index.js';
 
-export type AIProvider = 'openai' | 'anthropic' | 'gemini' | 'qwen';
+export type AIProvider = 'openai' | 'anthropic' | 'gemini' | 'qwen' | 'azure' | 'cohere' | 'mistral';
 
 export interface LLMConfig {
   model: string;
   provider: AIProvider;
   maxTokens?: number;
   temperature?: number;
+  // Azure specific
+  azureEndpoint?: string;
+  azureApiVersion?: string;
 }
 
 export class LLMAnalyzer {
@@ -17,12 +20,17 @@ export class LLMAnalyzer {
   private provider: AIProvider;
   private maxTokens: number;
   private temperature: number;
+  // Azure config
+  private azureEndpoint?: string;
+  private azureApiVersion?: string;
 
   constructor(config: LLMConfig) {
     this.model = config.model || 'gpt-4o-mini';
     this.provider = config.provider || 'openai';
     this.maxTokens = config.maxTokens || 500;
     this.temperature = config.temperature || 0.7;
+    this.azureEndpoint = config.azureEndpoint;
+    this.azureApiVersion = config.azureApiVersion || '2024-02-15-preview';
     
     // Get API key based on provider
     this.apiKey = this.getApiKey(this.provider);
@@ -36,6 +44,12 @@ export class LLMAnalyzer {
         return process.env.ANTHROPIC_API_KEY || '';
       case 'qwen':
         return process.env.QWEN_API_KEY || '';
+      case 'azure':
+        return process.env.AZURE_OPENAI_API_KEY || process.env.OPENAI_API_KEY || '';
+      case 'cohere':
+        return process.env.COHERE_API_KEY || '';
+      case 'mistral':
+        return process.env.MISTRAL_API_KEY || '';
       default:
         return process.env.OPENAI_API_KEY || '';
     }
@@ -81,6 +95,12 @@ export class LLMAnalyzer {
           return await this.callAnthropic(prompt);
         case 'qwen':
           return await this.callQwen(prompt);
+        case 'azure':
+          return await this.callAzure(prompt);
+        case 'cohere':
+          return await this.callCohere(prompt);
+        case 'mistral':
+          return await this.callMistral(prompt);
         default:
           return await this.callOpenAI(prompt);
       }
@@ -226,6 +246,83 @@ ${code.slice(0, 3000)}`;
     }
     
     return data.output?.text || '';
+  }
+
+  private async callAzure(prompt: string): Promise<string> {
+    if (!this.azureEndpoint) {
+      throw new Error('Azure endpoint not configured');
+    }
+
+    const url = `${this.azureEndpoint}/openai/deployments/${this.model}/chat/completions?api-version=${this.azureApiVersion}`;
+    
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'api-key': this.apiKey
+      },
+      body: JSON.stringify({
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: this.maxTokens,
+        temperature: this.temperature
+      })
+    });
+
+    const data: any = await res.json();
+    
+    if (data.error) {
+      throw new Error(data.error.message || 'Azure OpenAI Error');
+    }
+    
+    return data.choices?.[0]?.message?.content || '';
+  }
+
+  private async callCohere(prompt: string): Promise<string> {
+    const res = await fetch('https://api.cohere.ai/v1/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this.apiKey}`
+      },
+      body: JSON.stringify({
+        model: this.model || 'command-r-plus',
+        message: prompt,
+        max_tokens: this.maxTokens,
+        temperature: this.temperature
+      })
+    });
+
+    const data: any = await res.json();
+    
+    if (data.error) {
+      throw new Error(data.error.message || 'Cohere API Error');
+    }
+    
+    return data.text || '';
+  }
+
+  private async callMistral(prompt: string): Promise<string> {
+    const res = await fetch('https://api.mistral.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this.apiKey}`
+      },
+      body: JSON.stringify({
+        model: this.model || 'mistral-small-latest',
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: this.maxTokens,
+        temperature: this.temperature
+      })
+    });
+
+    const data: any = await res.json();
+    
+    if (data.error) {
+      throw new Error(data.error.message || 'Mistral API Error');
+    }
+    
+    return data.choices?.[0]?.message?.content || '';
   }
 }
 

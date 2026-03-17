@@ -1,178 +1,377 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Frontend AI Review - Web UI</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #1e1e1e; color: #fff; min-height: 100vh; }
-    .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-    h1 { text-align: center; margin-bottom: 30px; color: #4fc3f7; }
-    .upload-area { border: 2px dashed #444; border-radius: 10px; padding: 40px; text-align: center; cursor: pointer; transition: 0.3s; }
-    .upload-area:hover { border-color: #4fc3f7; background: #2a2a2a; }
-    .upload-area input { display: none; }
-    .btn { background: #4fc3f7; color: #000; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-size: 16px; margin: 10px 5px; }
-    .btn:hover { background: #29b6f6; }
-    .btn:disabled { background: #555; cursor: not-allowed; }
-    .config { background: #2a2a2a; padding: 20px; border-radius: 10px; margin: 20px 0; }
-    .config label { display: block; margin: 10px 0; }
-    .config input, .config select { width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #444; background: #333; color: #fff; }
-    .results { margin-top: 30px; }
-    .file-result { background: #2a2a2a; padding: 15px; margin: 10px 0; border-radius: 8px; }
-    .file-title { font-size: 18px; font-weight: bold; color: #4fc3f7; margin-bottom: 10px; }
-    .issue { padding: 8px 12px; margin: 5px 0; border-radius: 4px; }
-    .issue.error { background: #4a2a2a; border-left: 4px solid #f44336; }
-    .issue.warning { background: #4a4a2a; border-left: 4px solid #ff9800; }
-    .issue.suggestion { background: #2a3a4a; border-left: 4px solid #2196f3; }
-    .summary { background: #333; padding: 20px; border-radius: 10px; margin: 20px 0; }
-    .summary h2 { margin-bottom: 15px; }
-    .stat { display: inline-block; margin: 10px 20px 10px 0; font-size: 18px; }
-    .stat.error { color: #f44336; }
-    .stat.warning { color: #ff9800; }
-    .stat.suggestion { color: #2196f3; }
-    .loading { text-align: center; padding: 40px; }
-    .spinner { width: 40px; height: 40px; border: 4px solid #333; border-top-color: #4fc3f7; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>🤖 Frontend AI Review</h1>
-    
-    <div class="config">
-      <h3>⚙️ 配置</h3>
-      <label>
-        最低严重程度:
-        <select id="severity">
-          <option value="error">Error</option>
-          <option value="warning" selected>Warning</option>
-          <option value="suggestion">Suggestion</option>
-        </select>
-      </label>
-      <label>
-        <input type="checkbox" id="aiEnabled"> 启用 AI 分析
-      </label>
-      <label>
-        API Key:
-        <input type="password" id="apiKey" placeholder="OPENAI_API_KEY">
-      </label>
-    </div>
-
-    <div class="upload-area" onclick="document.getElementById('fileInput').click()">
-      <input type="file" id="fileInput" multiple accept=".js,.jsx,.ts,.tsx,.vue">
-      <p>📁 点击选择文件或拖拽到此处</p>
-      <p style="color: #888; font-size: 14px;">支持 .js, .jsx, .ts, .tsx, .vue</p>
-    </div>
-
-    <div style="text-align: center; margin: 20px 0;">
-      <button class="btn" onclick="runReview()" id="runBtn">🔍 开始审查</button>
-    </div>
-
-    <div id="loading" class="loading" style="display: none;">
-      <div class="spinner"></div>
-      <p>正在分析代码...</p>
-    </div>
-
-    <div id="results" class="results"></div>
-  </div>
-
-  <script>
-    let selectedFiles = [];
-
-    document.getElementById('fileInput').addEventListener('change', (e) => {
-      selectedFiles = Array.from(e.target.files);
-      document.querySelector('.upload-area p').textContent = `已选择 ${selectedFiles.length} 个文件`;
-    });
-
-    async function runReview() {
-      if (selectedFiles.length === 0) {
-        alert('请先选择文件');
-        return;
-      }
-
-      const severity = document.getElementById('severity').value;
-      const aiEnabled = document.getElementById('aiEnabled').checked;
-      const apiKey = document.getElementById('apiKey').value;
-
-      document.getElementById('loading').style.display = 'block';
-      document.getElementById('results').innerHTML = '';
-      document.getElementById('runBtn').disabled = true;
-
-      const formData = new FormData();
-      selectedFiles.forEach(f => formData.append('files', f));
-      formData.append('severity', severity);
-      formData.append('ai', aiEnabled);
-
-      if (apiKey) {
-        localStorage.setItem('fair_api_key', apiKey);
-      }
-
-      try {
-        // 模拟本地运行 (实际需要后端支持)
-        let resultsHtml = '<div class="summary"><h2>📊 审查结果</h2>';
-        resultsHtml += '<p>✅ 已分析 ' + selectedFiles.length + ' 个文件</p>';
-        resultsHtml += '<p style="color: #888;">提示: 请在本地安装 fair CLI 后运行，或启动 API 服务</p>';
-        resultsHtml += '</div>';
-
-        // 检查本地是否有 fair
-        try {
-          const response = await fetch('http://localhost:3000/api/review', {
-            method: 'POST',
-            body: formData
-          });
-          const data = await response.json();
-          resultsHtml = renderResults(data);
-        } catch (e) {
-          resultsHtml += '<div class="file-result"><p>💡 运行以下命令进行审查：</p>';
-          resultsHtml += '<code style="background: #333; padding: 10px; display: block; margin-top: 10px;">fair ./src -s ' + severity + (aiEnabled ? ' --ai' : '') + '</code></div>';
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frontend AI Review</title>
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --success: #22c55e;
+            --warning: #eab308;
+            --error: #ef4444;
+            --border: #475569;
         }
 
-        document.getElementById('results').innerHTML = resultsHtml;
-      } catch (err) {
-        alert('审查失败: ' + err.message);
-      }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-      document.getElementById('loading').style.display = 'none';
-      document.getElementById('runBtn').disabled = false;
-    }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
 
-    function renderResults(data) {
-      let html = '<div class="summary"><h2>📊 审查结果</h2>';
-      let error = 0, warning = 0, suggestion = 0;
-      
-      (data.issues || []).forEach(f => {
-        f.issues.forEach(i => {
-          if (i.severity === 'error') error++;
-          else if (i.severity === 'warning') warning++;
-          else suggestion++;
-        });
-      });
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
 
-      html += '<span class="stat error">🔴 Errors: ' + error + '</span>';
-      html += '<span class="stat warning">🟡 Warnings: ' + warning + '</span>';
-      html += '<span class="stat suggestion">🔵 Suggestions: ' + suggestion + '</span>';
-      html += '</div>';
+        header {
+            text-align: center;
+            padding: 3rem 0;
+            border-bottom: 1px solid var(--border);
+        }
 
-      (data.issues || []).forEach(f => {
-        html += '<div class="file-result"><div class="file-title">📁 ' + f.file + '</div>';
-        f.issues.forEach(i => {
-          html += '<div class="issue ' + i.severity + '">';
-          html += '<strong>' + i.ruleId + '</strong> (line ' + i.location.start.line + ')<br>';
-          html += i.message;
-          html += '</div>';
-        });
-        html += '</div>';
-      });
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
-      return html;
-    }
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
 
-    // Load saved API key
-    const savedKey = localStorage.getItem('fair_api_key');
-    if (savedKey) {
-      document.getElementById('apiKey').value = savedKey;
-    }
-  </script>
+        .card {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .checkbox-label input {
+            width: auto;
+        }
+
+        .results {
+            margin-top: 2rem;
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .summary-card {
+            background: var(--bg-tertiary);
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .summary-number {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .summary-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .error-count { color: var(--error); }
+        .warning-count { color: var(--warning); }
+        .suggestion-count { color: var(--accent); }
+
+        .issue {
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border-left: 4px solid var(--border);
+        }
+
+        .issue.error { border-left-color: var(--error); }
+        .issue.warning { border-left-color: var(--warning); }
+        .issue.suggestion { border-left-color: var(--accent); }
+
+        .issue-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .issue-rule {
+            font-weight: 600;
+        }
+
+        .issue-file {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .issue-message {
+            color: var(--text-secondary);
+        }
+
+        .issue-code {
+            background: var(--bg-primary);
+            padding: 0.75rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            margin-top: 0.5rem;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 Frontend AI Review</h1>
+            <p class="subtitle">AI-Powered Code Review for Frontend Developers</p>
+        </header>
+
+        <div class="card">
+            <div class="form-group">
+                <label for="projectPath">Project Path</label>
+                <input type="text" id="projectPath" placeholder="/path/to/project" value="/Users/half/Desktop/openClaw/electron">
+            </div>
+
+            <div class="form-group">
+                <label>Categories</label>
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" value="react" checked> React
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" value="vue" checked> Vue
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" value="typescript" checked> TypeScript
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" value="security" checked> Security
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" value="performance" checked> Performance
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" value="best-practice" checked> Best Practice
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="severity">Minimum Severity</label>
+                <select id="severity">
+                    <option value="suggestion">Suggestion</option>
+                    <option value="warning" selected>Warning</option>
+                    <option value="error">Error</option>
+                </select>
+            </div>
+
+            <button class="btn" id="runBtn" onclick="runReview()">
+                🚀 Run Review
+            </button>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Analyzing code...</p>
+        </div>
+
+        <div class="results hidden" id="results">
+            <div class="summary" id="summary"></div>
+            <div id="issues"></div>
+        </div>
+    </div>
+
+    <script>
+        async function runReview() {
+            const projectPath = document.getElementById('projectPath').value;
+            const severity = document.getElementById('severity').value;
+            
+            const categories = Array.from(document.querySelectorAll('.checkbox-group input:checked'))
+                .map(cb => cb.value);
+
+            const btn = document.getElementById('runBtn');
+            const loading = document.getElementById('loading');
+            const results = document.getElementById('results');
+            
+            btn.disabled = true;
+            loading.classList.remove('hidden');
+            results.classList.add('hidden');
+
+            try {
+                const response = await fetch('http://localhost:3000/api/review', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        projectPath,
+                        severity,
+                        category: categories
+                    })
+                });
+
+                const data = await response.json();
+                displayResults(data);
+            } catch (error) {
+                alert('Error: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                loading.classList.add('hidden');
+                results.classList.remove('hidden');
+            }
+        }
+
+        function displayResults(data) {
+            const summary = document.getElementById('summary');
+            const issues = document.getElementById('issues');
+
+            const stats = data.stats || { errorCount: 0, warningCount: 0, suggestionCount: 0 };
+            
+            summary.innerHTML = `
+                <div class="summary-card">
+                    <div class="summary-number">${data.filesAnalyzed || 0}</div>
+                    <div class="summary-label">Files Analyzed</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-number error-count">${stats.errorCount}</div>
+                    <div class="summary-label">Errors</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-number warning-count">${stats.warningCount}</div>
+                    <div class="summary-label">Warnings</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-number suggestion-count">${stats.suggestionCount}</div>
+                    <div class="summary-label">Suggestions</div>
+                </div>
+            `;
+
+            const issuesHtml = (data.results || []).map(result => {
+                return result.issues.map(issue => `
+                    <div class="issue ${issue.severity}">
+                        <div class="issue-header">
+                            <span class="issue-rule">[${issue.ruleId}]</span>
+                            <span class="issue-file">${result.file}:${issue.location.start.line}</span>
+                        </div>
+                        <div class="issue-message">${issue.message}</div>
+                    </div>
+                `).join('');
+            }).join('');
+
+            issues.innerHTML = issuesHtml || '<p>No issues found! 🎉</p>';
+        }
+    </script>
 </body>
 </html>

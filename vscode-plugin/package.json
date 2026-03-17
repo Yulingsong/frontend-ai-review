@@ -1,34 +1,106 @@
 {
   "name": "fair-vscode",
   "displayName": "Frontend AI Review",
-  "description": "AI-powered code review for frontend developers",
+  "description": "AI-powered code review tool for frontend developers",
   "version": "1.0.0",
   "publisher": "fair",
-  "engines": { "vscode": "^1.80.0" },
-  "categories": ["Linters", "Other"],
-  "activationEvents": ["onCommand:fair.run", "onSave"],
-  "main": "./out/extension",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Linters",
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:javascript",
+    "onLanguage:javascriptreact",
+    "onLanguage:typescript",
+    "onLanguage:typescriptreact",
+    "onLanguage:vue",
+    "onCommand:fair.run"
+  ],
+  "main": "./out/extension.js",
   "contributes": {
-    "commands": {
-      "command": "fair.run",
-      "title": "Run AI Code Review"
-    },
+    "commands": [
+      {
+        "command": "fair.run",
+        "title": "Run Frontend AI Review"
+      },
+      {
+        "command": "fair.runOnFolder",
+        "title": "Run Fair on Folder"
+      }
+    ],
     "configuration": {
-      "title": "Fair",
+      "title": "Frontend AI Review",
       "properties": {
-        "fair.enableOnSave": { "type": "boolean", "default": true },
-        "fair.severity": { "type": "string", "default": "warning", "enum": ["error", "warning", "suggestion"] },
-        "fair.aiEnabled": { "type": "boolean", "default": false },
-        "fair.aiApiKey": { "type": "string" }
+        "fair.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable Frontend AI Review"
+        },
+        "fair.severity": {
+          "type": "string",
+          "default": "warning",
+          "enum": ["error", "warning", "suggestion"],
+          "description": "Minimum severity to report"
+        },
+        "fair.categories": {
+          "type": "array",
+          "default": ["react", "vue", "typescript", "security", "performance", "best-practice"],
+          "description": "Categories to analyze"
+        },
+        "fair.autoFix": {
+          "type": "boolean",
+          "default": false,
+          "description": "Auto-fix fixable issues"
+        },
+        "fair.enableAI": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable AI-powered analysis"
+        },
+        "fair.aiModel": {
+          "type": "string",
+          "default": "gpt-4o-mini",
+          "description": "AI model to use"
+        }
+      }
+    },
+    "problemMatchers": {
+      "fair": {
+        "owner": "fair",
+        "fileLocation": "relative",
+        "pattern": {
+          "regexp": "^([\\/\\w\\.\\-]+):(\\d+):(\\d+)?\\s+\\[(\\w+)\\]\\s+(.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "message": 5
+        },
+        "severity": {
+          "error": "error",
+          "warning": "warning",
+          "suggestion": "info"
+        }
       }
     }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./"
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "postinstall": "vscode-install",
+    "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
+    "@types/node": "^20.0.0",
     "@types/vscode": "^1.80.0",
+    "@vscode/test-electron": "^2.3.0",
     "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "frontend-ai-review": "^2.2.0"
   }
 }

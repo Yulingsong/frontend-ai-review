@@ -1,0 +1,47 @@
+# Fair Ignore Patterns
+
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+dist-cjs/
+build/
+out/
+
+# Framework specific
+.next/
+.nuxt/
+.output/
+.svelte-kit/
+
+# Coverage
+coverage/
+.nyc_output/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Git
+.git/
+.github/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test
+__snapshots__/
+*.test.js
+*.spec.js

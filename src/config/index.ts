@@ -24,6 +24,39 @@ const CONFIG_FILES = [
   'fair.config.js'
 ];
 
+const IGNORE_FILES = [
+  '.fairignore',
+  '.fairignore.txt'
+];
+
+/**
+ * Load ignore patterns from .fairignore file
+ */
+export function loadIgnorePatterns(projectPath: string): string[] {
+  const patterns: string[] = [];
+  
+  for (const ignoreFile of IGNORE_FILES) {
+    const ignorePath = path.join(projectPath, ignoreFile);
+    if (fs.existsSync(ignorePath)) {
+      try {
+        const content = fs.readFileSync(ignorePath, 'utf-8');
+        const lines = content.split('\n');
+        for (const line of lines) {
+          const trimmed = line.trim();
+          // Skip comments and empty lines
+          if (trimmed && !trimmed.startsWith('#')) {
+            patterns.push(trimmed);
+          }
+        }
+      } catch (e) {
+        console.warn(pc.yellow(`⚠ Failed to load ${ignoreFile}: ${e}`));
+      }
+    }
+  }
+  
+  return patterns;
+}
+
 /**
  * Load configuration from file
  */

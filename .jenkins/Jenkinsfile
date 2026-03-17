@@ -1,0 +1,76 @@
+// Jenkins Pipeline for Frontend AI Review
+// Add this to Jenkinsfile in your project
+
+pipeline {
+    agent any
+    
+    environment {
+        FAIR_SEVERITY = 'warning'
+    }
+    
+    stages {
+        stage('Install Frontend AI Review') {
+            steps {
+                sh 'npm install -g frontend-ai-review'
+            }
+        }
+        
+        stage('Code Review') {
+            steps {
+                script {
+                    def output = sh(
+                        script: "fair . --severity ${env.FAIR_SEVERITY} --output json",
+                        returnStdout: true
+                    ).trim()
+                    
+                    def results = readJSON text: output
+                    
+                    if (results.summary?.errorCount > 0) {
+                        echo "❌ Found ${results.summary.errorCount} errors"
+                        currentBuild.result = 'FAILURE'
+                    }
+                    
+                    // Print summary
+                    echo "📊 Code Review Summary:"
+                    echo "   Files: ${results.summary?.totalFiles}"
+                    echo "   Errors: ${results.summary?.errorCount}"
+                    echo "   Warnings: ${results.summary?.warningCount}"
+                    echo "   Suggestions: ${results.summary?.suggestionCount}"
+                }
+            }
+        }
+        
+        stage('AI Code Review (Optional)') {
+            when {
+                expression { env.OPENAI_API_KEY }
+            }
+            steps {
+                sh 'fair . --severity ${env.FAIR_SEVERITY} --ai --output json'
+            }
+        }
+    }
+    
+    post {
+        always {
+            cleanWs()
+        }
+    }
+}
+
+// Alternative: Use as a step in existing pipeline
+def runFairReview(String severity = 'warning', boolean failOnError = false) {
+    sh "fair . --severity ${severity} --output json > fair-report.json"
+    
+    def report = readJSON file: 'fair-report.json'
+    
+    echo "📊 Fair Report:"
+    echo "   Errors: ${report.summary.errorCount}"
+    echo "   Warnings: ${report.summary.warningCount}"
+    echo "   Suggestions: ${report.summary.suggestionCount}"
+    
+    if (failOnError && report.summary.errorCount > 0) {
+        error "❌ Code review failed with ${report.summary.errorCount} errors"
+    }
+    
+    return report
+}

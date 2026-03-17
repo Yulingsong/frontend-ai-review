@@ -1,0 +1,42 @@
+# GitLab CI/CD for Frontend AI Review
+# Add this file to .gitlab-ci.yml in your project
+
+stages:
+  - code-review
+
+frontend-ai-review:
+  stage: code-review
+  image: node:20-alpine
+  allow_failure: true  # Set to false to block merges on issues
+  variables:
+    FAIR_SEVERITY: "warning"
+    FAIR_OUTPUT: "gitlab"
+  before_script:
+    - npm install -g frontend-ai-review
+  script:
+    - fair . --severity $FAIR_SEVERITY --output $FAIR_OUTPUT
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+  cache:
+    paths:
+      - node_modules/
+
+# Example with AI analysis
+frontend-ai-review-ai:
+  stage: code-review
+  image: node:20-alpine
+  allow_failure: true
+  variables:
+    OPENAI_API_KEY: $OPENAI_API_KEY
+    FAIR_SEVERITY: "warning"
+  before_script:
+    - npm install -g frontend-ai-review
+  script:
+    - fair . --severity $FAIR_SEVERITY --ai --ai-model gpt-4
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+  only:
+    variables:
+      - $OPENAI_API_KEY

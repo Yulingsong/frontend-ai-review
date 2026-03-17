@@ -38,6 +38,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DEFAULT_CONFIG = void 0;
+exports.loadIgnorePatterns = loadIgnorePatterns;
 exports.loadConfig = loadConfig;
 exports.mergeOptions = mergeOptions;
 exports.validateConfig = validateConfig;
@@ -64,6 +65,36 @@ const CONFIG_FILES = [
     'fair.config.json',
     'fair.config.js'
 ];
+const IGNORE_FILES = [
+    '.fairignore',
+    '.fairignore.txt'
+];
+/**
+ * Load ignore patterns from .fairignore file
+ */
+function loadIgnorePatterns(projectPath) {
+    const patterns = [];
+    for (const ignoreFile of IGNORE_FILES) {
+        const ignorePath = path.join(projectPath, ignoreFile);
+        if (fs.existsSync(ignorePath)) {
+            try {
+                const content = fs.readFileSync(ignorePath, 'utf-8');
+                const lines = content.split('\n');
+                for (const line of lines) {
+                    const trimmed = line.trim();
+                    // Skip comments and empty lines
+                    if (trimmed && !trimmed.startsWith('#')) {
+                        patterns.push(trimmed);
+                    }
+                }
+            }
+            catch (e) {
+                console.warn(picocolors_1.default.yellow(`⚠ Failed to load ${ignoreFile}: ${e}`));
+            }
+        }
+    }
+    return patterns;
+}
 /**
  * Load configuration from file
  */

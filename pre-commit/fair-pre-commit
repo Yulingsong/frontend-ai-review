@@ -1,31 +1,82 @@
 #!/bin/sh
-# Fair Pre-commit Hook
-# 安装到 .git/hooks/pre-commit
+# Frontend AI Review Pre-commit Hook
+# Install: cp pre-commit/fair-pre-commit .git/hooks/pre-commit
+# Or: ln -s ../../pre-commit/fair-pre-commit .git/hooks/pre-commit
 
-# 检查是否安装了 fair
-if ! command -v fair &> /dev/null; then
-  echo "❌ fair not found. Install: npm install -g frontend-ai-review"
-  exit 1
-fi
+# Configuration
+FAIR_PATH="$(command -v fair 2>/dev/null)"
+PROJECT_ROOT="$(git rev-parse --show-toplevel)"
+SEVERITY="${FAIR_SEVERITY:-warning}"
+OUTPUT="${FAIR_OUTPUT:-text}"
 
-# 获取暂存的文件
-FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(js|jsx|ts|tsx|vue)$')
-
-if [ -z "$FILES" ]; then
-  echo "✅ No files to review"
-  exit 0
-fi
-
-echo "🤖 Running Frontend AI Review..."
-
-# 运行 fair
-RESULT=$(fair . -s warning -o text 2>&1)
-
-if [ $? -eq 0 ]; then
-  echo "✅ Code review passed"
-  exit 0
+# Colors (if terminal supports it)
+if [ -t 1 ]; then
+    RED='\033[0;31m'
+    YELLOW='\033[0;33m'
+    GREEN='\033[0;32m'
+    BLUE='\033[0;34m'
+    NC='\033[0m'
 else
-  echo "❌ Code review failed"
-  echo "$RESULT"
-  exit 1
+    RED=''
+    YELLOW=''
+    GREEN=''
+    BLUE=''
+    NC=''
 fi
+
+# Check if fair is installed
+if [ -z "$FAIR_PATH" ]; then
+    echo "${YELLOW}⚠ fair not found. Install with: npm install -g frontend-ai-review${NC}"
+    exit 0
+fi
+
+# Get list of staged files
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(js|jsx|ts|tsx|vue|svelte)$' | head -20)
+
+if [ -z "$STAGED_FILES" ]; then
+    echo "${BLUE}ℹ No frontend files staged, skipping fair${NC}"
+    exit 0
+fi
+
+echo "${BLUE}🤖 Running Frontend AI Review...${NC}"
+
+# Run fair on staged files
+ERRORS=0
+WARNINGS=0
+
+for FILE in $STAGED_FILES; do
+    # Get the directory of the file
+    DIR=$(dirname "$FILE")
+    
+    # Run fair on the file's directory
+    RESULT=$("$FAIR_PATH" "$PROJECT_ROOT/$DIR" --severity "$SEVERITY" --output text 2>&1)
+    
+    if echo "$RESULT" | grep -q "Errors: [1-9]"; then
+        ERRORS=$((ERRORS + 1))
+    fi
+    
+    if echo "$RESULT" | grep -q "Warnings: [1-9]"; then
+        WARNINGS=$((WARNINGS + 1))
+    fi
+done
+
+# Print summary
+echo ""
+if [ $ERRORS -gt 0 ]; then
+    echo "${RED}❌ Frontend AI Review found $ERRORS errors${NC}"
+    echo "${RED}Please fix the errors before committing${NC}"
+    exit 1
+elif [ $WARNINGS -gt 0 ]; then
+    echo "${YELLOW}⚠ Frontend AI Review found $WARNINGS warnings${NC}"
+    if [ "${FAIR_BLOCK_ON_WARNING:-false}" = "true" ]; then
+        echo "${YELLOW}Blocking commit due to warnings (FAIR_BLOCK_ON_WARNING=true)${NC}"
+        exit 1
+    fi
+else
+    echo "${GREEN}✅ Frontend AI Review passed!${NC}"
+fi
+
+echo ""
+echo "${BLUE}ℹ Set FAIR_BLOCK_ON_WARNING=true to block on warnings${NC}"
+
+exit 0
