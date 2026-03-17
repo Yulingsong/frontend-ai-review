@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+dist-cjs/
+
+# Development
+.vscode/
+.idea/
+*.log
+
+# Tests
+coverage/
+tests/
+*.test.ts
+vitest.config.ts
+
+# Git
+.git/
+.github/
+
+# IDE
+*.swp
+*.swo
+*~
+
+# Docs
+docs/
+
+# Misc
+.DS_Store
+*.tgz
