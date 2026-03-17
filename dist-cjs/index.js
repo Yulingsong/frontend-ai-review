@@ -48,7 +48,7 @@ const analyzer_js_1 = require("./analyzer.js");
 const index_js_1 = require("./config/index.js");
 const index_js_2 = require("./utils/index.js");
 // Version
-const VERSION = '2.1.0';
+const VERSION = '2.3.0';
 /**
  * Parse CLI arguments
  */
@@ -156,7 +156,7 @@ ${picocolors_1.default.bold('Options:')}
   
   --ai                        启用 AI 分析
   --ai-model <model>         AI 模型 (default: gpt-4o-mini)
-  --ai-provider <provider>   AI 提供商: openai, anthropic, gemini, qwen
+  --ai-provider <provider>   AI 提供商: openai, anthropic, gemini, azure, cohere, mistral, qwen
   
   --fix                       自动修复可修复的问题
   --parallel                  启用并行分析 (提升速度)

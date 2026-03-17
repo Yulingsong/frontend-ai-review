@@ -13,7 +13,7 @@ import { detectFramework } from './utils/index.js';
 import type { CLIOptions } from './types/index.js';
 
 // Version
-const VERSION = '2.1.0';
+const VERSION = '2.3.0';
 
 /**
  * Parse CLI arguments
@@ -126,7 +126,7 @@ ${pc.bold('Options:')}
   
   --ai                        启用 AI 分析
   --ai-model <model>         AI 模型 (default: gpt-4o-mini)
-  --ai-provider <provider>   AI 提供商: openai, anthropic, gemini, qwen
+  --ai-provider <provider>   AI 提供商: openai, anthropic, gemini, azure, cohere, mistral, qwen
   
   --fix                       自动修复可修复的问题
   --parallel                  启用并行分析 (提升速度)
