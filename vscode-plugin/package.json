@@ -1,0 +1,34 @@
+{
+  "name": "fair-vscode",
+  "displayName": "Frontend AI Review",
+  "description": "AI-powered code review for frontend developers",
+  "version": "1.0.0",
+  "publisher": "fair",
+  "engines": { "vscode": "^1.80.0" },
+  "categories": ["Linters", "Other"],
+  "activationEvents": ["onCommand:fair.run", "onSave"],
+  "main": "./out/extension",
+  "contributes": {
+    "commands": {
+      "command": "fair.run",
+      "title": "Run AI Code Review"
+    },
+    "configuration": {
+      "title": "Fair",
+      "properties": {
+        "fair.enableOnSave": { "type": "boolean", "default": true },
+        "fair.severity": { "type": "string", "default": "warning", "enum": ["error", "warning", "suggestion"] },
+        "fair.aiEnabled": { "type": "boolean", "default": false },
+        "fair.aiApiKey": { "type": "string" }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.80.0",
+    "typescript": "^5.0.0"
+  }
+}

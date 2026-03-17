@@ -1,12 +1,24 @@
 {
-  "severity": "warning",
+  "severity": "suggestion",
   "output": "text",
   "exclude": [
     "node_modules/**",
     "dist/**",
     "build/**",
     ".next/**",
-    "coverage/**"
+    ".git/**",
+    "coverage/**",
+    "*.min.js"
   ],
-  "category": ["react", "vue", "typescript", "security"]
+  "category": [
+    "react",
+    "vue",
+    "typescript",
+    "security",
+    "performance",
+    "best-practice"
+  ],
+  "ai": false,
+  "aiModel": "gpt-4o-mini",
+  "aiProvider": "openai"
 }

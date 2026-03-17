@@ -1,7 +1,7 @@
 # Frontend AI Review 🤖
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.2.0-blue" alt="Version">
+  <img src="https://img.shields.io/badge/version-2.1.0-blue" alt="Version">
   <img src="https://img.shields.io/badge/license-MIT-green" alt="License">
   <img src="https://img.shields.io/badge/node-%3E%3D18-orange" alt="Node Version">
 </p>
@@ -25,14 +25,15 @@
 | 特性 | 描述 |
 |------|------|
 | 🔍 **多框架支持** | React、Vue、Next.js、Nuxt.js、Svelte |
-| ⚡ **高性能** | 递归遍历项目，支持大规模分析 |
-| 📊 **规则丰富** | 覆盖 React、TypeScript、性能、安全、最佳实践 |
-| 🤖 **AI 分析** | 支持 OpenAI API 深度分析 |
+| ⚡ **高性能** | 支持并行分析、增量缓存 |
+| 📊 **40+ 规则** | 覆盖 React、Vue、TypeScript、安全、性能、最佳实践 |
+| 🤖 **多 AI 支持** | OpenAI、Anthropic、Google Gemini、阿里 Qwen |
 | 🔧 **自动修复** | 支持自动修复部分问题 |
 | ⚙️ **CLI 参数** | 灵活配置 |
 | 📄 **配置文件** | 支持 .fairrc.json |
 | 📑 **多种输出** | JSON/GitHub 格式，支持程序化集成 |
 | 🚀 **GitHub Action** | 支持 CI/CD 集成 |
+| 🧪 **测试支持** | 内置单元测试 |
 
 ---
 
@@ -78,7 +79,12 @@ node dist/index.js /path/to/project
 | `-r, --rules` | 指定规则 | 全部 | `-r react/exhaustive-deps` |
 | `--ai` | 启用 AI 分析 | false | `--ai` |
 | `--ai-model` | AI 模型 | gpt-4o-mini | `--ai-model gpt-4` |
+| `--ai-provider` | AI 提供商 | openai | `--ai-provider anthropic` |
 | `--fix` | 自动修复 | false | `--fix` |
+| `--parallel` | 并行分析 | false | `--parallel` |
+| `--cache` | 启用缓存 | false | `--cache` |
+| `-i, --interactive` | 交互式模式 | false | `-i` |
+| `--init` | 创建配置文件 | - | `--init` |
 | `-h` | 显示帮助 | - | `-h` |
 
 ---
@@ -102,7 +108,10 @@ node dist/index.js /path/to/project
     "vue",
     "typescript",
     "security"
-  ]
+  ],
+  "ai": false,
+  "aiModel": "gpt-4o-mini",
+  "aiProvider": "openai"
 }
 ```
 
@@ -110,14 +119,24 @@ node dist/index.js /path/to/project
 
 ## 🤖 AI 分析
 
-使用 OpenAI API 进行深度代码分析：
+支持多种 AI 提供商：
 
 ```bash
-# 设置环境变量
-export OPENAI_API_KEY=sk-your-key-here
-
-# 启用 AI 分析
+# OpenAI (默认)
+export OPENAI_API_KEY=sk-your-key
 fair /path/to/project --ai
+
+# Anthropic Claude
+export ANTHROPIC_API_KEY=sk-ant-your-key
+fair /path/to/project --ai --ai-provider anthropic
+
+# Google Gemini
+export GEMINI_API_KEY=your-gemini-key
+fair /path/to/project --ai --ai-provider gemini
+
+# 阿里云 Qwen
+export QWEN_API_KEY=your-qwen-key
+fair /path/to/project --ai --ai-provider qwen
 
 # 使用更强大的模型
 fair /path/to/project --ai --ai-model gpt-4
@@ -140,6 +159,22 @@ fair /path/to/project --fix
 | `perf/console-log` | 删除 console.log 行 |
 | `best-practice/no-var` | 将 var 替换为 let |
 | `best-practice/prefer-const` | 将 let 替换为 const |
+| `typescript/no-unused-vars` | 删除未使用变量 |
+
+---
+
+## ⚡ 性能优化
+
+```bash
+# 并行分析 - 大项目推荐使用
+fair /path/to/project --parallel
+
+# 增量缓存 - 跳过未更改的文件
+fair /path/to/project --cache
+
+# 组合使用
+fair /path/to/project --parallel --cache
+```
 
 ---
 
@@ -186,11 +221,13 @@ jobs:
 ## 📊 输出示例
 
 ```
-🤖 Frontend AI Review v1.2.0
+🤖 Frontend AI Review v2.1.0
 ──────────────────────────────────────────────────
 Framework: react
 Severity: suggestion
-Rules: 16 enabled
+Output: text
+Rules: 42 enabled
+AI: openai (gpt-4o-mini)
 
 Found 25 files to analyze
 
@@ -202,9 +239,11 @@ Found 25 files to analyze
 🔴 security/hardcoded-credentials line 5
    检测到硬编码凭证 'password'
 
+🔵 perf/console-log line 10 💡 可修复: 删除此行
+
 📊 Summary
 ────────────────────────────────────────────────────────────
-Files: 25 | 有问题: 8
+Files: 25 | Analyzed: 25 | Issues: 8
    Errors: 2
    Warnings: 8
    Suggestions: 5
@@ -217,9 +256,9 @@ Files: 25 | 有问题: 8
 
 ---
 
-## 📦 内置规则 (16+)
+## 📦 内置规则 (40+)
 
-### 🔴 React 规则
+### 🔴 React 规则 (8)
 
 | 规则 ID | 描述 | 严重程度 |
 |---------|------|----------|
@@ -228,39 +267,56 @@ Files: 25 | 有问题: 8
 | `react/hooks-rule-of-hooks` | Hooks 必须在顶层调用 | error |
 | `react/no-direct-mutation-state` | 禁止直接修改 state | error |
 | `react/button-has-type` | button 应指定 type | suggestion |
+| `react/iframe-missing-title` | iframe 缺少 title | warning |
+| `react/img-missing-alt` | img 缺少 alt | warning |
+| `react/use-async-callback` | 异步回调建议用 useCallback | suggestion |
 
-### 💚 Vue 规则
+### 💚 Vue 规则 (5)
 
 | 规则 ID | 描述 | 严重程度 |
 |---------|------|----------|
 | `vue/no-ref-as-reactivity` | ref.value 响应式问题 | warning |
 | `vue/require-default-prop` | Props 应有默认值 | warning |
+| `vue/v-for-key` | v-for 需要 key | warning |
+| `vue/no-multiple-objects-in-data` | data 应返回函数 | warning |
+| `vue/no-mutating-props` | 禁止修改 props | error |
 
-### 💙 TypeScript 规则
+### 💙 TypeScript 规则 (6)
 
 | 规则 ID | 描述 | 严重程度 |
 |---------|------|----------|
 | `typescript/no-any` | 禁止使用 any 类型 | warning |
 | `typescript/no-unused-vars` | 禁止未使用变量 | warning |
 | `typescript/explicit-return` | 建议显式返回类型 | suggestion |
+| `typescript/await-promise` | await 只能用于 Promise | error |
+| `typescript/no-implicit-any-catch` | catch 参数应指定类型 | warning |
 
-### 🔒 安全规则
+### 🔒 安全规则 (8)
 
 | 规则 ID | 描述 | 严重程度 |
 |---------|------|----------|
 | `security/eval` | 禁止使用 eval | error |
 | `security/hardcoded-credentials` | 禁止硬编码凭证 | error |
 | `security/inner-html` | innerHTML XSS 风险 | error |
+| `security/sql-injection` | SQL 注入风险 | error |
+| `security/command-injection` | 命令注入风险 | error |
+| `security/weak-crypto` | 弱加密算法 | warning |
+| `security/insecure-random` | 不安全随机数 | warning |
+| `security/cookie-no-secure` | Cookie 缺少 Secure | warning |
 
-### ⚡ 性能规则
+### ⚡ 性能规则 (7)
 
 | 规则 ID | 描述 | 严重程度 |
 |---------|------|----------|
 | `perf/console-log` | 建议移除 console.log | suggestion |
 | `perf/anonymous-function` | 避免 JSX 匿名函数 | suggestion |
 | `perf/array-push-in-loop` | 循环中频繁 push | warning |
+| `perf/object-assign` | 可用展开语法替代 | suggestion |
+| `perf/dup-array-methods` | 避免重复遍历 | warning |
+| `perf/react-memo` | 建议使用 React.memo | suggestion |
+| `perf/list-without-key` | 列表缺少稳定 key | warning |
 
-### 📝 最佳实践
+### 📝 最佳实践 (10)
 
 | 规则 ID | 描述 | 严重程度 |
 |---------|------|----------|
@@ -269,6 +325,11 @@ Files: 25 | 有问题: 8
 | `best-practice/no-var` | 使用 const/let | warning |
 | `best-practice/prefer-const` | 优先使用 const | suggestion |
 | `best-practice/require-await` | 异步错误处理 | suggestion |
+| `best-practice/no-nested-callbacks` | 避免回调地狱 | warning |
+| `best-practice/error-throw` | 应抛出 Error 对象 | warning |
+| `best-practice/import-order` | 导入顺序建议 | suggestion |
+| `best-practice/completed-promises` | 不必要的 Promise | warning |
+| `best-practice/useless-nullish` | 不必要的 ?? 运算 | suggestion |
 
 ---
 
@@ -277,13 +338,24 @@ Files: 25 | 有问题: 8
 ```
 frontend-ai-review/
 ├── src/
-│   ├── index.ts          # 主程序
-│   └── types.ts          # 类型定义
-├── .github/
-│   └── workflows/        # GitHub Actions
-│       └── code-review.yml
-├── examples/
-│   └── .fairrc.example  # 配置示例
+│   ├── index.ts          # 主程序入口
+│   ├── analyzer.ts       # 分析器核心
+│   ├── fixer.ts          # 自动修复
+│   ├── types/            # 类型定义
+│   ├── rules/            # 规则实现
+│   │   ├── index.ts      # 规则导出
+│   │   ├── react.ts      # React 规则
+│   │   ├── vue.ts        # Vue 规则
+│   │   ├── typescript.ts # TypeScript 规则
+│   │   ├── security.ts   # 安全规则
+│   │   ├── performance.ts# 性能规则
+│   │   └── best-practice.ts
+│   ├── utils/            # 工具函数
+│   ├── llm/              # AI 分析
+│   └── config/           # 配置处理
+├── tests/                # 单元测试
+├── examples/             # 配置示例
+├── .github/workflows/    # GitHub Actions
 ├── README.md
 ├── package.json
 └── tsconfig.json
@@ -307,8 +379,8 @@ npm run dev
 # 构建
 npm run build
 
-# 本地测试
-node dist/index.js /path/to/test-project
+# 测试
+npm run test
 ```
 
 ---
