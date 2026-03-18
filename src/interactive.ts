@@ -3,7 +3,24 @@
 import * as readline from 'readline';
 import pc from 'picocolors';
 import { getRuleStats } from './rules/index.js';
-import type { CLIOptions } from './types/index.js';
+import type { CLIOptions, SeverityLevel } from './types/index.js';
+
+// Validators
+const VALID_SEVERITY = ['error', 'warning', 'suggestion'] as const;
+const VALID_OUTPUT = ['text', 'json', 'github'] as const;
+const VALID_AI_PROVIDER = ['openai', 'anthropic', 'gemini', 'azure', 'cohere', 'mistral', 'qwen'] as const;
+
+function validateSeverity(v: string): SeverityLevel {
+  return VALID_SEVERITY.includes(v as any) ? v as SeverityLevel : 'warning';
+}
+
+function validateOutput(v: string): CLIOptions['output'] {
+  return VALID_OUTPUT.includes(v as any) ? v as CLIOptions['output'] : 'text';
+}
+
+function validateAIProvider(v: string): CLIOptions['aiProvider'] {
+  return VALID_AI_PROVIDER.includes(v as any) ? v as CLIOptions['aiProvider'] : 'openai';
+}
 
 export interface InteractiveAnswers {
   projectPath: string;
@@ -148,11 +165,11 @@ export async function runInteractive(): Promise<Partial<CLIOptions>> {
   
   return {
     projectPath,
-    severity: severity as any,
+    severity: validateSeverity(severity),
     category,
-    output: output as any,
+    output: validateOutput(output),
     ai,
-    aiProvider: aiProvider as any,
+    aiProvider: validateAIProvider(aiProvider),
     aiModel,
     parallel,
     interactive: true

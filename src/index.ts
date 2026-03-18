@@ -234,7 +234,7 @@ async function main() {
   if (options.ai) {
     console.log(pc.gray(`AI: ${options.aiProvider} (${options.aiModel})`));
     const { LLMAnalyzer } = await import('./llm/index.js');
-    const llm = new LLMAnalyzer({ model: options.aiModel, provider: options.aiProvider as any });
+    const llm = new LLMAnalyzer({ model: options.aiModel, provider: options.aiProvider });
     const test = await llm.testConnection();
     if (test.success) {
       console.log(pc.green('✅ AI 连接成功'));

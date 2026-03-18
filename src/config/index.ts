@@ -102,7 +102,7 @@ export function mergeOptions(cliOptions: Partial<CLIOptions>, config: Config): C
     exclude: [...(config.exclude || []), ...(cliOptions.exclude || [])],
     rules: cliOptions.rules || config.rules,
     ai: cliOptions.ai ?? config.ai ?? false,
-    aiProvider: (cliOptions as any).aiProvider || config.aiProvider || 'openai',
+    aiProvider: cliOptions.aiProvider || config.aiProvider || 'openai',
     aiModel: cliOptions.aiModel || config.aiModel || 'gpt-4o-mini',
     fix: cliOptions.fix || false,
     help: cliOptions.help || false,

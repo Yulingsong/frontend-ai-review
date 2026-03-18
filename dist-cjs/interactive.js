@@ -41,6 +41,19 @@ exports.runInteractive = runInteractive;
 const readline = __importStar(require("readline"));
 const picocolors_1 = __importDefault(require("picocolors"));
 const index_js_1 = require("./rules/index.js");
+// Validators
+const VALID_SEVERITY = ['error', 'warning', 'suggestion'];
+const VALID_OUTPUT = ['text', 'json', 'github'];
+const VALID_AI_PROVIDER = ['openai', 'anthropic', 'gemini', 'azure', 'cohere', 'mistral', 'qwen'];
+function validateSeverity(v) {
+    return VALID_SEVERITY.includes(v) ? v : 'warning';
+}
+function validateOutput(v) {
+    return VALID_OUTPUT.includes(v) ? v : 'text';
+}
+function validateAIProvider(v) {
+    return VALID_AI_PROVIDER.includes(v) ? v : 'openai';
+}
 /**
  * Create readline interface
  */
@@ -153,11 +166,11 @@ async function runInteractive() {
     }
     return {
         projectPath,
-        severity: severity,
+        severity: validateSeverity(severity),
         category,
-        output: output,
+        output: validateOutput(output),
         ai,
-        aiProvider: aiProvider,
+        aiProvider: validateAIProvider(aiProvider),
         aiModel,
         parallel,
         interactive: true

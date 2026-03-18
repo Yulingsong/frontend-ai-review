@@ -41,7 +41,7 @@ export interface CLIOptions {
   exclude: string[];
   rules?: string[];
   ai: boolean;
-  aiProvider: 'openai' | 'anthropic' | 'gemini' | 'qwen';
+  aiProvider: 'openai' | 'anthropic' | 'gemini' | 'azure' | 'cohere' | 'mistral' | 'qwen';
   aiModel: string;
   fix: boolean;
   help: boolean;
@@ -64,7 +64,7 @@ export interface Config {
   rules?: string[];
   ai?: boolean;
   aiModel?: string;
-  aiProvider?: string;
+  aiProvider?: 'openai' | 'anthropic' | 'gemini' | 'azure' | 'cohere' | 'mistral' | 'qwen';
 }
 
 export interface AnalysisResult {

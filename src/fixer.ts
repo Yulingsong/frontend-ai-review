@@ -3,7 +3,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import pc from 'picocolors';
-import type { Issue } from './types/index';
+import type { Issue } from './types/index.js';
 
 export interface FixResult {
   file: string;

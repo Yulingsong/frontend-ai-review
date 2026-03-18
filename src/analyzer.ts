@@ -69,7 +69,7 @@ export class Analyzer {
     if (this.options.ai) {
       this.llm = new LLMAnalyzer({
         model: this.options.aiModel,
-        provider: this.options.aiProvider as any
+        provider: this.options.aiProvider
       });
     }
   }

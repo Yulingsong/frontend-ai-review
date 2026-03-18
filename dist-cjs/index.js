@@ -49,6 +49,19 @@ const index_js_1 = require("./config/index.js");
 const index_js_2 = require("./utils/index.js");
 // Version
 const VERSION = '2.3.1';
+// CLI argument validators
+const VALID_OUTPUT = ['text', 'json', 'github'];
+const VALID_SEVERITY = ['error', 'warning', 'suggestion'];
+const VALID_AI_PROVIDER = ['openai', 'anthropic', 'gemini', 'azure', 'cohere', 'mistral', 'qwen'];
+function validateOutput(value) {
+    return VALID_OUTPUT.includes(value) ? value : 'text';
+}
+function validateSeverity(value) {
+    return VALID_SEVERITY.includes(value) ? value : 'suggestion';
+}
+function validateAIProvider(value) {
+    return VALID_AI_PROVIDER.includes(value) ? value : 'openai';
+}
 /**
  * Parse CLI arguments
  */
@@ -62,11 +75,11 @@ function parseArgs() {
         switch (a) {
             case '-o':
             case '--output':
-                options.output = args[++i];
+                options.output = validateOutput(args[++i]);
                 break;
             case '-s':
             case '--severity':
-                options.severity = args[++i];
+                options.severity = validateSeverity(args[++i]);
                 break;
             case '-c':
             case '--category':
@@ -87,7 +100,7 @@ function parseArgs() {
                 options.aiModel = args[++i];
                 break;
             case '--ai-provider':
-                options.aiProvider = args[++i];
+                options.aiProvider = validateAIProvider(args[++i]);
                 break;
             case '--fix':
                 options.fix = true;
