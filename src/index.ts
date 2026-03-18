@@ -10,10 +10,27 @@ import pc from 'picocolors';
 import { Analyzer } from './analyzer.js';
 import { loadConfig, mergeOptions, validateConfig, createDefaultConfig } from './config/index.js';
 import { detectFramework } from './utils/index.js';
-import type { CLIOptions } from './types/index.js';
+import type { CLIOptions, SeverityLevel } from './types/index.js';
 
 // Version
 const VERSION = '2.3.1';
+
+// CLI argument validators
+const VALID_OUTPUT = ['text', 'json', 'github'] as const;
+const VALID_SEVERITY = ['error', 'warning', 'suggestion'] as const;
+const VALID_AI_PROVIDER = ['openai', 'anthropic', 'gemini', 'azure', 'cohere', 'mistral', 'qwen'] as const;
+
+function validateOutput(value: string): CLIOptions['output'] {
+  return VALID_OUTPUT.includes(value as any) ? value as CLIOptions['output'] : 'text';
+}
+
+function validateSeverity(value: string): SeverityLevel {
+  return VALID_SEVERITY.includes(value as any) ? value as SeverityLevel : 'suggestion';
+}
+
+function validateAIProvider(value: string): CLIOptions['aiProvider'] {
+  return VALID_AI_PROVIDER.includes(value as any) ? value as CLIOptions['aiProvider'] : 'openai';
+}
 
 /**
  * Parse CLI arguments
@@ -30,11 +47,11 @@ function parseArgs(): Partial<CLIOptions> {
     switch (a) {
       case '-o':
       case '--output':
-        options.output = args[++i] as any;
+        options.output = validateOutput(args[++i]);
         break;
       case '-s':
       case '--severity':
-        options.severity = args[++i] as any;
+        options.severity = validateSeverity(args[++i]);
         break;
       case '-c':
       case '--category':
@@ -55,7 +72,7 @@ function parseArgs(): Partial<CLIOptions> {
         options.aiModel = args[++i];
         break;
       case '--ai-provider':
-        (options as any).aiProvider = args[++i];
+        options.aiProvider = validateAIProvider(args[++i]);
         break;
       case '--fix':
         options.fix = true;
