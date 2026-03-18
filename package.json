@@ -1,6 +1,6 @@
 {
   "name": "frontend-ai-review",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "AI-powered code review tool for frontend developers",
   "type": "module",
   "main": "dist/index.js",

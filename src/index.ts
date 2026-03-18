@@ -13,7 +13,7 @@ import { detectFramework } from './utils/index.js';
 import type { CLIOptions } from './types/index.js';
 
 // Version
-const VERSION = '2.3.0';
+const VERSION = '2.3.1';
 
 /**
  * Parse CLI arguments
