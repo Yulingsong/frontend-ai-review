@@ -30,7 +30,7 @@ export class AutoFixer {
       errors: []
     };
 
-    if (!issues.length) return result;
+    if (!issues.length) {return result;}
 
     let content: string;
     try {

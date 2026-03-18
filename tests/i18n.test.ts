@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { 
+import {
   t,
   setLocale,
   getLocale,
@@ -47,5 +47,4 @@ describe('i18n', () => {
       expect(result).toContain('5');
     });
   });
-});
 });

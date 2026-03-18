@@ -34,7 +34,7 @@ const IGNORE_FILES = [
  */
 export function loadIgnorePatterns(projectPath: string): string[] {
   const patterns: string[] = [];
-  
+
   for (const ignoreFile of IGNORE_FILES) {
     const ignorePath = path.join(projectPath, ignoreFile);
     if (fs.existsSync(ignorePath)) {
@@ -53,7 +53,7 @@ export function loadIgnorePatterns(projectPath: string): string[] {
       }
     }
   }
-  
+
   return patterns;
 }
 
@@ -71,16 +71,16 @@ export function loadConfig(projectPath: string): Config {
           console.warn(pc.yellow('⚠ JS config files are not yet supported'));
           return DEFAULT_CONFIG;
         }
-        
+
         const parsed = JSON.parse(content);
-        
+
         // Validate config
         const validation = validate(parsed);
         if (!validation.valid) {
           console.warn(pc.yellow(`⚠ Config validation errors in ${configFile}:`));
           validation.errors.forEach(e => console.warn(pc.yellow(`  - ${e}`)));
         }
-        
+
         return { ...DEFAULT_CONFIG, ...parsed };
       } catch (e) {
         console.warn(pc.yellow(`⚠ Failed to load config from ${configFile}: ${e}`));
@@ -118,15 +118,15 @@ export function mergeOptions(cliOptions: Partial<CLIOptions>, config: Config): C
  */
 export function validateConfig(config: Config): { valid: boolean; errors: string[] } {
   const errors: string[] = [];
-  
+
   if (config.severity && !['error', 'warning', 'suggestion'].includes(config.severity)) {
     errors.push(`Invalid severity: ${config.severity}`);
   }
-  
+
   if (config.output && !['text', 'json', 'github'].includes(config.output)) {
     errors.push(`Invalid output: ${config.output}`);
   }
-  
+
   if (config.category) {
     const validCategories = ['react', 'vue', 'typescript', 'security', 'performance', 'best-practice'];
     const invalid = config.category.filter(c => !validCategories.includes(c));
@@ -134,11 +134,11 @@ export function validateConfig(config: Config): { valid: boolean; errors: string
       errors.push(`Invalid categories: ${invalid.join(', ')}`);
     }
   }
-  
+
   if (config.aiProvider && !['openai', 'anthropic', 'gemini', 'qwen'].includes(config.aiProvider)) {
     errors.push(`Invalid AI provider: ${config.aiProvider}`);
   }
-  
+
   return {
     valid: errors.length === 0,
     errors

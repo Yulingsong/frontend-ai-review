@@ -40,10 +40,10 @@ function parseArgs(): Partial<CLIOptions> {
   const options: Partial<CLIOptions> = {
     projectPath: process.cwd()
   };
-  
+
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
-    
+
     switch (a) {
       case '-o':
       case '--output':
@@ -120,7 +120,7 @@ function parseArgs(): Partial<CLIOptions> {
         }
     }
   }
-  
+
   return options;
 }
 
@@ -184,27 +184,27 @@ ${pc.bold('Environment Variables:')}
  */
 async function main() {
   const cliOptions = parseArgs();
-  
+
   // Version
   if (cliOptions.version) {
     console.log(`Frontend AI Review v${VERSION}`);
     console.log(`Rules: ${(await import('./rules/index.js')).getRuleStats().total}`);
     return;
   }
-  
+
   // Help
   if (cliOptions.help) {
     showHelp();
     return;
   }
-  
+
   console.log(pc.cyan(`\n🤖 Frontend AI Review v${VERSION}`));
   console.log(pc.dim('─'.repeat(50)));
-  
+
   // Load config
   const config = loadConfig(cliOptions.projectPath!);
   const options = mergeOptions(cliOptions, config);
-  
+
   // Validate
   const validation = validateConfig(config);
   if (!validation.valid) {
@@ -212,24 +212,26 @@ async function main() {
     validation.errors.forEach(e => console.log(pc.red(`  - ${e}`)));
     process.exit(1);
   }
-  
+
   // Package.json
-  let pkg: any = {};
+  let pkg: Record<string, unknown> = {};
   try {
     pkg = JSON.parse(fs.readFileSync(path.join(options.projectPath, 'package.json'), 'utf-8'));
-  } catch {}
-  
+  } catch {
+    // Ignore if package.json doesn't exist or is invalid
+  }
+
   // Framework detection
   const framework = detectFramework(pkg);
   console.log(pc.gray(`Framework: ${framework}`));
   console.log(pc.gray(`Severity: ${options.severity}`));
   console.log(pc.gray(`Output: ${options.output}`));
-  
+
   // Rules
   const analyzer = new Analyzer(options);
   const ruleStats = analyzer.getRuleStats();
   console.log(pc.gray(`Rules: ${ruleStats.total} enabled`));
-  
+
   // AI
   if (options.ai) {
     console.log(pc.gray(`AI: ${options.aiProvider} (${options.aiModel})`));
@@ -242,15 +244,15 @@ async function main() {
       console.log(pc.red(`❌ AI 连接失败: ${test.error}`));
     }
   }
-  
+
   // Options
-  if (options.parallel) console.log(pc.gray('Parallel: Enabled'));
-  if (options.cache) console.log(pc.gray('Cache: Enabled'));
+  if (options.parallel) {console.log(pc.gray('Parallel: Enabled'));}
+  if (options.cache) {console.log(pc.gray('Cache: Enabled'));}
   console.log();
-  
+
   // Analyze
   const results = await analyzer.analyze();
-  
+
   // Output
   analyzer.output(results);
 }

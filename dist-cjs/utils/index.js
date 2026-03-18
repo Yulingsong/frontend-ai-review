@@ -64,22 +64,28 @@ function generateId() {
  * Detect the frontend framework from package.json
  */
 function detectFramework(packageJson) {
-    if (!packageJson?.dependencies)
+    if (!packageJson?.dependencies) {
         return 'unknown';
+    }
     const deps = {
         ...packageJson.dependencies,
         ...packageJson.devDependencies
     };
-    if (deps.next || deps['next-auth'])
+    if (deps.next || deps['next-auth']) {
         return 'next';
-    if (deps.nuxt || deps.nuxt3)
+    }
+    if (deps.nuxt || deps.nuxt3) {
         return 'nuxt';
-    if (deps.vue && !deps.nuxt)
+    }
+    if (deps.vue && !deps.nuxt) {
         return 'vue';
-    if (deps.react && !deps.next)
+    }
+    if (deps.react && !deps.next) {
         return 'react';
-    if (deps.svelte && !deps.nuxt)
+    }
+    if (deps.svelte && !deps.nuxt) {
         return 'svelte';
+    }
     return 'unknown';
 }
 /**
@@ -138,18 +144,21 @@ function getRelativePath(filePath, projectPath) {
  * Format file size for display
  */
 function formatFileSize(bytes) {
-    if (bytes < 1024)
+    if (bytes < 1024) {
         return `${bytes} B`;
-    if (bytes < 1024 * 1024)
+    }
+    if (bytes < 1024 * 1024) {
         return `${(bytes / 1024).toFixed(1)} KB`;
+    }
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 /**
  * Truncate string with ellipsis
  */
 function truncate(str, maxLength) {
-    if (str.length <= maxLength)
+    if (str.length <= maxLength) {
         return str;
+    }
     return str.slice(0, maxLength - 3) + '...';
 }
 /**
@@ -204,8 +213,9 @@ exports.logger = {
     warn: (msg) => console.log(picocolors_1.default.yellow('⚠ ') + msg),
     error: (msg) => console.log(picocolors_1.default.red('✗ ') + msg),
     debug: (msg) => {
-        if (process.env.DEBUG)
+        if (process.env.DEBUG) {
             console.log(picocolors_1.default.dim('🔍 ') + msg);
+        }
     }
 };
 __exportStar(require("./git.js"), exports);

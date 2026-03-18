@@ -269,7 +269,7 @@ exports.reactRules = [
                     const restOfFile = lines.slice(i).join('\n');
                     if (restOfFile.includes(propName) &&
                         !line.includes('=') &&
-                        !content.includes(`defaultProps`) &&
+                        !content.includes('defaultProps') &&
                         !content.includes('interface Props')) {
                         issues.push({
                             id: (0, index_js_1.generateId)(),

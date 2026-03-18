@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import type { 
+import type {
   Issue,
   Rule,
   Config,
@@ -24,7 +24,7 @@ describe('Types', () => {
         line: 10,
         column: 5
       };
-      
+
       expect(issue.id).toBe('1');
       expect(issue.ruleId).toBe('no-console');
       expect(issue.severity).toBe('error');
@@ -36,7 +36,7 @@ describe('Types', () => {
       const error: SeverityLevel = 'error';
       const warning: SeverityLevel = 'warning';
       const suggestion: SeverityLevel = 'suggestion';
-      
+
       expect(error).toBe('error');
       expect(warning).toBe('warning');
       expect(suggestion).toBe('suggestion');
@@ -49,7 +49,7 @@ describe('Types', () => {
       const vue: Framework = 'vue';
       const next: Framework = 'next';
       const svelte: Framework = 'svelte';
-      
+
       expect(react).toBe('react');
       expect(vue).toBe('vue');
       expect(next).toBe('next');
@@ -69,7 +69,7 @@ describe('Types', () => {
         },
         timestamp: new Date().toISOString()
       };
-      
+
       expect(result.issues).toEqual([]);
       expect(result.summary.total).toBe(0);
     });

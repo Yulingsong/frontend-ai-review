@@ -17,12 +17,12 @@ export function outputSarif(
 ): string {
   // Convert issues to SARIF format
   const resultsList = [];
-  
+
   for (const result of results) {
-    if (result.issues.length === 0) continue;
-    
+    if (result.issues.length === 0) {continue;}
+
     const filePath = getRelativePath(result.file, projectPath);
-    
+
     for (const issue of result.issues) {
       resultsList.push({
         ruleId: issue.ruleId,
@@ -47,7 +47,7 @@ export function outputSarif(
       });
     }
   }
-  
+
   // Build SARIF document
   const sarif: Record<string, unknown> = {
     version: '2.1.0',
@@ -66,7 +66,7 @@ export function outputSarif(
       }
     ]
   };
-  
+
   // Add repository information if provided
   if (options.repoUri) {
     const runs = sarif.runs as Array<Record<string, unknown>>;
@@ -75,7 +75,7 @@ export function outputSarif(
       revisionId: options.commitSha || 'HEAD'
     }];
   }
-  
+
   return JSON.stringify(sarif, null, 2);
 }
 
@@ -100,7 +100,7 @@ function getUniqueRules(results: AnalysisResult[]): Array<{
   defaultConfiguration?: { level: string };
 }> {
   const ruleSet = new Map<string, unknown>();
-  
+
   for (const result of results) {
     for (const issue of result.issues) {
       if (!ruleSet.has(issue.ruleId)) {
@@ -117,7 +117,7 @@ function getUniqueRules(results: AnalysisResult[]): Array<{
       }
     }
   }
-  
+
   return Array.from(ruleSet.values()) as Array<{
     id: string;
     name: string;

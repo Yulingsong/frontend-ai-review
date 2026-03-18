@@ -70,8 +70,8 @@ async function askYesNo(question: string, defaultYes: boolean = false): Promise<
   const defaultStr = defaultYes ? 'Y/n' : 'y/N';
   const answer = await ask(`${question} [${defaultStr}]: `);
   const trimmed = answer.trim().toLowerCase();
-  
-  if (!trimmed) return defaultYes;
+
+  if (!trimmed) {return defaultYes;}
   return trimmed === 'y' || trimmed === 'yes';
 }
 
@@ -89,12 +89,12 @@ function displayHeader(): void {
 function displayCategories(): void {
   const stats = getRuleStats();
   console.log(pc.bold('\n📂 Available Categories:'));
-  
+
   for (const [cat, count] of Object.entries(stats.byCategory)) {
     const icon = getCategoryIcon(cat);
     console.log(`  ${icon} ${cat}: ${count} rules`);
   }
-  
+
   console.log(pc.dim(`\n  Total: ${stats.total} rules`));
 }
 
@@ -118,35 +118,35 @@ function getCategoryIcon(category: string): string {
  */
 export async function runInteractive(): Promise<Partial<CLIOptions>> {
   displayHeader();
-  
+
   // Project path
   const projectPath = await askDefault('\n📁 Project path', process.cwd());
-  
+
   // Severity
   const severity = await askDefault('\n🎯 Minimum severity (error/warning/suggestion)', 'warning');
-  
+
   // Categories
   displayCategories();
   const categoriesAnswer = await ask('\n📂 Categories (comma-separated, empty for all): ');
   const category = categoriesAnswer.trim() ? categoriesAnswer.split(',').map(c => c.trim()) : undefined;
-  
+
   // Output format
   const output = await askDefault('\n📄 Output format (text/json/github)', 'text');
-  
+
   // AI
   const ai = await askYesNo('\n🤖 Enable AI analysis?');
-  
+
   let aiProvider = 'openai';
   let aiModel = 'gpt-4o-mini';
-  
+
   if (ai) {
     aiProvider = await askDefault('\n🔌 AI provider (openai/anthropic/gemini/qwen)', 'openai');
     aiModel = await askDefault('\n🤖 AI model', 'gpt-4o-mini');
   }
-  
+
   // Parallel
   const parallel = await askYesNo('\n⚡ Enable parallel processing?');
-  
+
   // Summary
   console.log(pc.cyan('\n📋 Summary:'));
   console.log(`  Project: ${projectPath}`);
@@ -155,14 +155,14 @@ export async function runInteractive(): Promise<Partial<CLIOptions>> {
   console.log(`  Output: ${output}`);
   console.log(`  AI: ${ai ? `${aiProvider}/${aiModel}` : 'disabled'}`);
   console.log(`  Parallel: ${parallel ? 'enabled' : 'disabled'}`);
-  
+
   const confirm = await askYesNo('\n✅ Start analysis?');
-  
+
   if (!confirm) {
     console.log(pc.yellow('\n👋 Cancelled.'));
     process.exit(0);
   }
-  
+
   return {
     projectPath,
     severity: validateSeverity(severity),

@@ -11,8 +11,9 @@ exports.typescriptRules = [
         name: 'no-any',
         description: '避免使用 any 类型，应使用具体的类型',
         detect: (content, filePath) => {
-            if (!filePath.match(/\.(ts|tsx)$/))
+            if (!filePath.match(/\.(ts|tsx)$/)) {
                 return [];
+            }
             const issues = [];
             const lines = content.split('\n');
             lines.forEach((line, i) => {
@@ -37,8 +38,9 @@ exports.typescriptRules = [
         name: 'no-unused-vars',
         description: '禁止未使用的变量',
         detect: (content, filePath) => {
-            if (!filePath.match(/\.(ts|tsx)$/))
+            if (!filePath.match(/\.(ts|tsx)$/)) {
                 return [];
+            }
             const issues = [];
             const vars = new Set();
             const usedVars = new Set();
@@ -48,8 +50,9 @@ exports.typescriptRules = [
                 if (declMatch) {
                     declMatch.forEach(m => {
                         const varName = m.replace(/^(const|let|var)\s+/, '');
-                        if (!line.includes('='))
+                        if (!line.includes('=')) {
                             vars.add(varName);
+                        }
                     });
                 }
             });
@@ -58,8 +61,9 @@ exports.typescriptRules = [
                 const useMatch = line.match(/\b(\w+)\b/g);
                 if (useMatch) {
                     useMatch.forEach(m => {
-                        if (vars.has(m))
+                        if (vars.has(m)) {
                             usedVars.add(m);
+                        }
                     });
                 }
             });
@@ -90,8 +94,9 @@ exports.typescriptRules = [
         name: 'explicit-return',
         description: '建议显式声明函数返回类型',
         detect: (content, filePath) => {
-            if (!filePath.match(/\.(ts|tsx)$/))
+            if (!filePath.match(/\.(ts|tsx)$/)) {
                 return [];
+            }
             const issues = [];
             const lines = content.split('\n');
             lines.forEach((line, i) => {
@@ -121,8 +126,9 @@ exports.typescriptRules = [
         name: 'await-promise',
         description: 'await 只能用于 Promise',
         detect: (content, filePath) => {
-            if (!filePath.match(/\.(ts|tsx|js|jsx)$/))
+            if (!filePath.match(/\.(ts|tsx|js|jsx)$/)) {
                 return [];
+            }
             const issues = [];
             const lines = content.split('\n');
             lines.forEach((line, i) => {
@@ -149,8 +155,9 @@ exports.typescriptRules = [
         name: 'no-implicit-any-catch',
         description: 'catch 参数应指定类型',
         detect: (content, filePath) => {
-            if (!filePath.match(/\.(ts|tsx)$/))
+            if (!filePath.match(/\.(ts|tsx)$/)) {
                 return [];
+            }
             const issues = [];
             const lines = content.split('\n');
             lines.forEach((line, i) => {
@@ -174,8 +181,9 @@ exports.typescriptRules = [
         name: 'strict-null-checks',
         description: '注意 null/undefined 检查',
         detect: (content, filePath) => {
-            if (!filePath.match(/\.(ts|tsx)$/))
+            if (!filePath.match(/\.(ts|tsx)$/)) {
                 return [];
+            }
             const issues = [];
             const lines = content.split('\n');
             lines.forEach((line) => {

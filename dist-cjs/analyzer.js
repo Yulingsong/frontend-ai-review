@@ -298,12 +298,15 @@ class Analyzer {
         };
         for (const result of results) {
             for (const issue of result.issues) {
-                if (issue.severity === 'error')
+                if (issue.severity === 'error') {
                     stats.errorCount++;
-                if (issue.severity === 'warning')
+                }
+                if (issue.severity === 'warning') {
                     stats.warningCount++;
-                if (issue.severity === 'suggestion')
+                }
+                if (issue.severity === 'suggestion') {
                     stats.suggestionCount++;
+                }
                 // Count by category (extract from ruleId)
                 const category = issue.ruleId.split('/')[0];
                 stats.byCategory[category] = (stats.byCategory[category] || 0) + 1;
@@ -354,8 +357,9 @@ class Analyzer {
         const { red, yellow, blue } = colors;
         // Results with issues
         for (const { file, issues } of results) {
-            if (issues.length === 0)
+            if (issues.length === 0) {
                 continue;
+            }
             console.log(picocolors_1.default.bold(`\n📁 ${(0, index_js_3.getRelativePath)(file, this.options.projectPath)}`));
             console.log(picocolors_1.default.dim('─'.repeat(50)));
             for (const issue of issues) {

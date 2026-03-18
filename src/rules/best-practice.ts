@@ -13,15 +13,15 @@ export const bestPracticeRules: Rule[] = [
     detect: (content: string) => {
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       lines.forEach((line, i) => {
         // Magic numbers (3+ digits)
-        if ((line.match(/===\s*\d{3,}/) || 
-             line.match(/<\s*\d{3,}/) || 
+        if ((line.match(/===\s*\d{3,}/) ||
+             line.match(/<\s*\d{3,}/) ||
              line.match(/>\s*\d{3,}/) ||
              line.match(/<=\s*\d{3,}/) ||
-             line.match(/>=\s*\d{3,}/)) && 
-            !line.includes('const ') && 
+             line.match(/>=\s*\d{3,}/)) &&
+            !line.includes('const ') &&
             !line.includes('//') &&
             !line.includes('return')) {
           issues.push({
@@ -33,7 +33,7 @@ export const bestPracticeRules: Rule[] = [
           });
         }
       });
-      
+
       return issues;
     }
   },
@@ -46,7 +46,7 @@ export const bestPracticeRules: Rule[] = [
     detect: (content: string) => {
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       lines.forEach((line, i) => {
         // Empty catch block
         if (line.match(/catch[^}]*\{\s*\}/)) {
@@ -59,7 +59,7 @@ export const bestPracticeRules: Rule[] = [
           });
         }
       });
-      
+
       return issues;
     }
   },
@@ -74,7 +74,7 @@ export const bestPracticeRules: Rule[] = [
     detect: (content: string) => {
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       lines.forEach((line, i) => {
         if (line.match(/\bvar\s+\w+/) && !line.includes('//') && !line.includes('/*')) {
           issues.push({
@@ -88,7 +88,7 @@ export const bestPracticeRules: Rule[] = [
           });
         }
       });
-      
+
       return issues;
     }
   },
@@ -103,7 +103,7 @@ export const bestPracticeRules: Rule[] = [
     detect: (content: string) => {
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       lines.forEach((line, i) => {
         // let without reassignment
         if (line.match(/let\s+\w+/) && !line.includes('=')) {
@@ -126,7 +126,7 @@ export const bestPracticeRules: Rule[] = [
           }
         }
       });
-      
+
       return issues;
     }
   },
@@ -139,7 +139,7 @@ export const bestPracticeRules: Rule[] = [
     detect: (content: string) => {
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       lines.forEach((line, i) => {
         // async function without await
         if (line.includes('async') && (line.match(/function\s+\w+/) || line.match(/=.*=>/))) {
@@ -154,7 +154,7 @@ export const bestPracticeRules: Rule[] = [
           }
         }
       });
-      
+
       return issues;
     }
   },
@@ -167,11 +167,11 @@ export const bestPracticeRules: Rule[] = [
     detect: (content: string) => {
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       let callbackDepth = 0;
       let maxDepth = 0;
       let maxDepthLine = 0;
-      
+
       lines.forEach((line, i) => {
         if (line.includes('.then(') || line.includes('.catch(') || line.includes('function(')) {
           callbackDepth++;
@@ -184,7 +184,7 @@ export const bestPracticeRules: Rule[] = [
           callbackDepth = Math.max(0, callbackDepth - 1);
         }
       });
-      
+
       if (maxDepth >= 3) {
         issues.push({
           id: generateId(),
@@ -194,7 +194,7 @@ export const bestPracticeRules: Rule[] = [
           location: { start: { line: maxDepthLine + 1, column: 0 }, end: { line: maxDepthLine + 1, column: 0 } }
         });
       }
-      
+
       return issues;
     }
   },
@@ -207,7 +207,7 @@ export const bestPracticeRules: Rule[] = [
     detect: (content: string) => {
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       lines.forEach((line, i) => {
         // throw "string" instead of throw new Error("string")
         if (line.match(/throw\s+['"`]/)) {
@@ -220,7 +220,7 @@ export const bestPracticeRules: Rule[] = [
           });
         }
       });
-      
+
       return issues;
     }
   },
@@ -233,36 +233,36 @@ export const bestPracticeRules: Rule[] = [
     detect: (content: string) => {
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
-      const importLines: Array<{ 
-        line: number; 
+
+      const importLines: Array<{
+        line: number;
         type: 'side-effect' | 'package' | 'relative' | 'builtin';
         value: string;
         isDefault: boolean;
         isNamespace: boolean;
       }> = [];
-      
+
       // Parse all import statements
       lines.forEach((line, i) => {
         const trimmedLine = line.trim();
-        
+
         if (trimmedLine.startsWith('import ')) {
           // Side-effect import: import './style.css'
           if (trimmedLine.match(/^import\s+['"][^'"]+['"]/)) {
             importLines.push({ line: i, type: 'side-effect', value: trimmedLine, isDefault: false, isNamespace: false });
-          } 
+          }
           // Regular import with from
           else if (trimmedLine.includes(' from ')) {
             const match = trimmedLine.match(/import\s+(?:\{[^}]*\}|\w+|\* as \w+)?\s*from\s+['"]([^'"]+)['"]/);
             if (match) {
               const path = match[1];
               const isRelative = path.startsWith('.');
-              const isBuiltin = /^(?:node:|@?std\/)/.test(path) || 
+              const isBuiltin = /^(?:node:|@?std\/)/.test(path) ||
                                ['path', 'fs', 'os', 'http', 'https', 'crypto', 'util', 'events', 'stream', 'buffer', 'assert', 'child_process', 'cluster', 'dgram', 'dns', 'domain', 'http2', 'https', 'net', 'perf_hooks', 'process', 'punycode', 'querystring', 'readline', 'repl', 'string_decoder', 'sys', 'timers', 'tls', 'trace_events', 'tty', 'url', 'util', 'v8', 'vm', 'wasi', 'worker_threads', 'zlib'].some(p => path === p || path === `node:${p}`);
-              
+
               const isDefault = /import\s+\w+/.test(trimmedLine) && !trimmedLine.includes('* as');
               const isNamespace = /import\s+\*\s+as/.test(trimmedLine);
-              
+
               if (isBuiltin) {
                 importLines.push({ line: i, type: 'builtin', value: path, isDefault, isNamespace });
               } else if (isRelative) {
@@ -278,16 +278,16 @@ export const bestPracticeRules: Rule[] = [
           }
         }
       });
-      
+
       // Expected order: builtin → package → relative → side-effect
       const typeOrder = { 'builtin': 0, 'package': 1, 'relative': 2, 'side-effect': 3 };
       let lastType = -1;
-      
+
       for (const imp of importLines) {
         const currentType = typeOrder[imp.type];
         if (currentType < lastType) {
           const expectedOrder = Object.entries(typeOrder)
-            .filter(([_, v]) => v < currentType)
+            .filter(([, v]) => v < currentType)
             .map(([k]) => k)
             .join(' → ');
           issues.push({
@@ -300,7 +300,7 @@ export const bestPracticeRules: Rule[] = [
         }
         lastType = currentType;
       }
-      
+
       // Check for duplicate imports
       const seenImports = new Map<string, number>();
       for (const imp of importLines) {
@@ -319,7 +319,7 @@ export const bestPracticeRules: Rule[] = [
           }
         }
       }
-      
+
       return issues;
     }
   },
@@ -332,7 +332,7 @@ export const bestPracticeRules: Rule[] = [
     detect: (content: string) => {
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       lines.forEach((line, i) => {
         // new Promise((resolve) => resolve(value))
         if (line.includes('new Promise') && line.includes('resolve(')) {
@@ -345,7 +345,7 @@ export const bestPracticeRules: Rule[] = [
           });
         }
       });
-      
+
       return issues;
     }
   },
@@ -358,7 +358,7 @@ export const bestPracticeRules: Rule[] = [
     detect: (content: string) => {
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       lines.forEach((line, i) => {
         // ?? with null or undefined on right side
         if (line.includes('??') && (line.match(/\?\?\s*null/) || line.match(/\?\?\s*undefined/))) {
@@ -371,7 +371,7 @@ export const bestPracticeRules: Rule[] = [
           });
         }
       });
-      
+
       return issues;
     }
   }

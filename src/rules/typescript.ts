@@ -11,10 +11,10 @@ export const typescriptRules: Rule[] = [
     name: 'no-any',
     description: '避免使用 any 类型，应使用具体的类型',
     detect: (content: string, filePath: string) => {
-      if (!filePath.match(/\.(ts|tsx)$/)) return [];
+      if (!filePath.match(/\.(ts|tsx)$/)) {return [];}
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       lines.forEach((line, i) => {
         // Avoid any type in annotations
         if (line.match(/:\s*any\b/) && !line.includes('//') && !line.includes('/*')) {
@@ -27,7 +27,7 @@ export const typescriptRules: Rule[] = [
           });
         }
       });
-      
+
       return issues;
     }
   },
@@ -38,32 +38,32 @@ export const typescriptRules: Rule[] = [
     name: 'no-unused-vars',
     description: '禁止未使用的变量',
     detect: (content: string, filePath: string) => {
-      if (!filePath.match(/\.(ts|tsx)$/)) return [];
+      if (!filePath.match(/\.(ts|tsx)$/)) {return [];}
       const issues: Issue[] = [];
       const vars = new Set<string>();
       const usedVars = new Set<string>();
-      
+
       // Find variable declarations
       content.split('\n').forEach(line => {
         const declMatch = line.match(/(?:const|let|var)\s+(\w+)/g);
         if (declMatch) {
           declMatch.forEach(m => {
             const varName = m.replace(/^(const|let|var)\s+/, '');
-            if (!line.includes('=')) vars.add(varName);
+            if (!line.includes('=')) {vars.add(varName);}
           });
         }
       });
-      
+
       // Find usage (simplified)
       content.split('\n').forEach(line => {
         const useMatch = line.match(/\b(\w+)\b/g);
         if (useMatch) {
           useMatch.forEach(m => {
-            if (vars.has(m)) usedVars.add(m);
+            if (vars.has(m)) {usedVars.add(m);}
           });
         }
       });
-      
+
       // Report unused vars (excluding private vars starting with _)
       vars.forEach((v: string) => {
         if (!usedVars.has(v) && !v.startsWith('_')) {
@@ -81,7 +81,7 @@ export const typescriptRules: Rule[] = [
           }
         }
       });
-      
+
       return issues;
     }
   },
@@ -92,13 +92,13 @@ export const typescriptRules: Rule[] = [
     name: 'explicit-return',
     description: '建议显式声明函数返回类型',
     detect: (content: string, filePath: string) => {
-      if (!filePath.match(/\.(ts|tsx)$/)) return [];
+      if (!filePath.match(/\.(ts|tsx)$/)) {return [];}
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       lines.forEach((line, i) => {
         // Function without return type
-        if ((line.match(/function\s+\w+\s*\([^)]*\)/) || line.match(/const\s+\w+\s*=\s*\([^)]*\)\s*=>/)) && 
+        if ((line.match(/function\s+\w+\s*\([^)]*\)/) || line.match(/const\s+\w+\s*=\s*\([^)]*\)\s*=>/)) &&
             !line.match(/:\s*(void|string|number|boolean|any|\w+)/)) {
           // Skip if it's a simple one-liner
           const nextLine = lines[i + 1] || '';
@@ -113,7 +113,7 @@ export const typescriptRules: Rule[] = [
           }
         }
       });
-      
+
       return issues;
     }
   },
@@ -124,10 +124,10 @@ export const typescriptRules: Rule[] = [
     name: 'await-promise',
     description: 'await 只能用于 Promise',
     detect: (content: string, filePath: string) => {
-      if (!filePath.match(/\.(ts|tsx|js|jsx)$/)) return [];
+      if (!filePath.match(/\.(ts|tsx|js|jsx)$/)) {return [];}
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       lines.forEach((line, i) => {
         if (line.includes('await ') && !line.includes('Promise') && !line.includes('then')) {
           // This is a simplified check - in real code would need AST
@@ -142,7 +142,7 @@ export const typescriptRules: Rule[] = [
           }
         }
       });
-      
+
       return issues;
     }
   },
@@ -153,10 +153,10 @@ export const typescriptRules: Rule[] = [
     name: 'no-implicit-any-catch',
     description: 'catch 参数应指定类型',
     detect: (content: string, filePath: string) => {
-      if (!filePath.match(/\.(ts|tsx)$/)) return [];
+      if (!filePath.match(/\.(ts|tsx)$/)) {return [];}
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       lines.forEach((line, i) => {
         if (line.match(/catch\s*\(\s*\w+\s*\)/)) {
           issues.push({
@@ -168,7 +168,7 @@ export const typescriptRules: Rule[] = [
           });
         }
       });
-      
+
       return issues;
     }
   },
@@ -179,10 +179,10 @@ export const typescriptRules: Rule[] = [
     name: 'strict-null-checks',
     description: '注意 null/undefined 检查',
     detect: (content: string, filePath: string) => {
-      if (!filePath.match(/\.(ts|tsx)$/)) return [];
+      if (!filePath.match(/\.(ts|tsx)$/)) {return [];}
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       lines.forEach((line) => {
         // Accessing property without null check
         if (line.match(/\w+\.\w+/) && !line.includes('?') && !line.includes('if')) {
@@ -192,7 +192,7 @@ export const typescriptRules: Rule[] = [
           }
         }
       });
-      
+
       return issues;
     }
   }

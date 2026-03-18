@@ -3,8 +3,8 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { 
-  generateId, 
+import {
+  generateId,
   detectFramework,
   getSeverityColor,
   getSeverityIcon,

@@ -13,7 +13,7 @@ export const securityRules: Rule[] = [
     detect: (content: string) => {
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       lines.forEach((line, i) => {
         if (line.includes('eval(') && !line.includes('//') && !line.includes('/*')) {
           issues.push({
@@ -25,7 +25,7 @@ export const securityRules: Rule[] = [
           });
         }
       });
-      
+
       return issues;
     }
   },
@@ -47,11 +47,11 @@ export const securityRules: Rule[] = [
         /bearer\s+/i,
         /private[_-]?key\s*[:=]\s*['"`]/i,
       ];
-      
+
       lines.forEach((line, i) => {
         for (const pattern of credentialPatterns) {
-          if (pattern.test(line) && 
-              !line.includes('process.env') && 
+          if (pattern.test(line) &&
+              !line.includes('process.env') &&
               !line.includes('import') &&
               !line.includes('//')) {
             issues.push({
@@ -65,7 +65,7 @@ export const securityRules: Rule[] = [
           }
         }
       });
-      
+
       return issues;
     }
   },
@@ -78,7 +78,7 @@ export const securityRules: Rule[] = [
     detect: (content: string) => {
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       lines.forEach((line, i) => {
         // Direct innerHTML assignment
         if (line.match(/\.innerHTML\s*=/)) {
@@ -101,7 +101,7 @@ export const securityRules: Rule[] = [
           });
         }
       });
-      
+
       return issues;
     }
   },
@@ -114,10 +114,10 @@ export const securityRules: Rule[] = [
     detect: (content: string) => {
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       // SQL keywords to check
       const sqlKeywords = ['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'CREATE', 'DROP', 'ALTER', 'TRUNCATE'];
-      
+
       // Dangerous patterns for SQL injection
       const dangerousPatterns = [
         /\+\s*['"`]/,                    // String concatenation with quote
@@ -127,35 +127,35 @@ export const securityRules: Rule[] = [
         /\.format\([^)]*\+[^)]*\)/,      // .format() with concatenation
         /interpolate\([^)]*\+[^)]*\)/,   // Custom interpolation
       ];
-      
+
       lines.forEach((line, i) => {
         // Skip comments and strings
         if (line.includes('//') || line.includes('/*') || line.includes('--')) {
           return;
         }
-        
+
         // Check for SQL keywords
         const hasSQLKeyword = sqlKeywords.some(keyword => line.toUpperCase().includes(keyword));
-        
+
         if (hasSQLKeyword) {
           // Check for dangerous patterns
           const hasDangerousPattern = dangerousPatterns.some(pattern => pattern.test(line));
-          
+
           // Check for safe patterns (parameterized queries)
-          const hasParameterizedQuery = line.includes('?') || 
-                                        line.includes('$1') || 
+          const hasParameterizedQuery = line.includes('?') ||
+                                        line.includes('$1') ||
                                         line.includes('${') ||
                                         line.includes('.param(') ||
                                         line.includes('bind(') ||
                                         line.includes('execute(');
-          
+
           // Check for ORM usage (safe)
-          const hasORM = line.includes('.find') || 
-                        line.includes('.where') || 
+          const hasORM = line.includes('.find') ||
+                        line.includes('.where') ||
                         line.includes('.create') ||
                         line.includes('.query') ||
                         line.includes('knex');
-          
+
           if (hasDangerousPattern && !hasParameterizedQuery && !hasORM) {
             issues.push({
               id: generateId(),
@@ -165,7 +165,7 @@ export const securityRules: Rule[] = [
               location: { start: { line: i + 1, column: 0 }, end: { line: i + 1, column: 0 } }
             });
           }
-          
+
           // Also warn about template literals with SQL
           if (line.includes('`') && line.includes('${') && !hasParameterizedQuery) {
             issues.push({
@@ -178,7 +178,7 @@ export const securityRules: Rule[] = [
           }
         }
       });
-      
+
       return issues;
     }
   },
@@ -191,12 +191,12 @@ export const securityRules: Rule[] = [
     detect: (content: string) => {
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       const dangerousFuncs = ['exec', 'execSync', 'spawn', 'spawnSync', 'execFile', 'execFileSync'];
-      
+
       lines.forEach((line, i) => {
         for (const func of dangerousFuncs) {
-          if (line.includes(`${func}(`) && 
+          if (line.includes(`${func}(`) &&
               (line.includes('+') || line.includes('`') || line.includes('$(')) &&
               !line.includes('[')) {
             issues.push({
@@ -210,7 +210,7 @@ export const securityRules: Rule[] = [
           }
         }
       });
-      
+
       return issues;
     }
   },
@@ -224,10 +224,10 @@ export const securityRules: Rule[] = [
       const issues: Issue[] = [];
       const lines = content.split('\n');
       const weakAlgos = ['md5', 'sha1', 'des', 'rc4'];
-      
+
       lines.forEach((line, i) => {
         for (const algo of weakAlgos) {
-          if (line.match(new RegExp(algo, 'i')) && line.includes("'")) {
+          if (line.match(new RegExp(algo, 'i')) && line.includes('\'')) {
             issues.push({
               id: generateId(),
               ruleId: 'security/weak-crypto',
@@ -239,7 +239,7 @@ export const securityRules: Rule[] = [
           }
         }
       });
-      
+
       return issues;
     }
   },
@@ -252,9 +252,9 @@ export const securityRules: Rule[] = [
     detect: (content: string) => {
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       lines.forEach((line, i) => {
-        if (line.includes('Math.random()') && 
+        if (line.includes('Math.random()') &&
             (line.includes('password') || line.includes('token') || line.includes('key') || line.includes('id'))) {
           issues.push({
             id: generateId(),
@@ -265,7 +265,7 @@ export const securityRules: Rule[] = [
           });
         }
       });
-      
+
       return issues;
     }
   },
@@ -278,11 +278,11 @@ export const securityRules: Rule[] = [
     detect: (content: string) => {
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       lines.forEach((line, i) => {
-        if (line.includes('cookie') && 
+        if (line.includes('cookie') &&
             line.match(/Set-Cookie|i18next|cookie-parser/) &&
-            !line.includes('secure') && 
+            !line.includes('secure') &&
             !line.includes('Secure')) {
           issues.push({
             id: generateId(),
@@ -293,7 +293,7 @@ export const securityRules: Rule[] = [
           });
         }
       });
-      
+
       return issues;
     }
   }

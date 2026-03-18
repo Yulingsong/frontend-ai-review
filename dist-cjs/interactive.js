@@ -89,8 +89,9 @@ async function askYesNo(question, defaultYes = false) {
     const defaultStr = defaultYes ? 'Y/n' : 'y/N';
     const answer = await ask(`${question} [${defaultStr}]: `);
     const trimmed = answer.trim().toLowerCase();
-    if (!trimmed)
+    if (!trimmed) {
         return defaultYes;
+    }
     return trimmed === 'y' || trimmed === 'yes';
 }
 /**

@@ -35,7 +35,7 @@ export function getChangedFiles(dir: string, options: {
 
   try {
     let cmd = 'git status --porcelain';
-    
+
     if (options.staged) {
       cmd = 'git diff --cached --name-status';
     } else if (options.branch) {
@@ -47,8 +47,8 @@ export function getChangedFiles(dir: string, options: {
       cmd = 'git status --porcelain';
     }
 
-    const output = execSync(cmd, { 
-      cwd: dir, 
+    const output = execSync(cmd, {
+      cwd: dir,
       encoding: 'utf-8',
       stdio: ['pipe', 'pipe', 'ignore']
     });
@@ -71,7 +71,7 @@ export function getChangedFiles(dir: string, options: {
           'R': 'renamed',
           'C': 'renamed'
         };
-        
+
         files.push({
           path: filePath.trim(),
           status: statusMap[status] || 'modified'

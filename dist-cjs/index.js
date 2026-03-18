@@ -237,7 +237,9 @@ async function main() {
     try {
         pkg = JSON.parse(fs.readFileSync(path.join(options.projectPath, 'package.json'), 'utf-8'));
     }
-    catch { }
+    catch {
+        // Ignore if package.json doesn't exist or is invalid
+    }
     // Framework detection
     const framework = (0, index_js_2.detectFramework)(pkg);
     console.log(picocolors_1.default.gray(`Framework: ${framework}`));
@@ -261,10 +263,12 @@ async function main() {
         }
     }
     // Options
-    if (options.parallel)
+    if (options.parallel) {
         console.log(picocolors_1.default.gray('Parallel: Enabled'));
-    if (options.cache)
+    }
+    if (options.cache) {
         console.log(picocolors_1.default.gray('Cache: Enabled'));
+    }
     console.log();
     // Analyze
     const results = await analyzer.analyze();

@@ -13,13 +13,13 @@ export const reactRules: Rule[] = [
     detect: (content: string) => {
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       lines.forEach((line, i) => {
         // Match useEffect with empty deps
         if (line.includes('useEffect') && line.includes('[]')) {
           // Look ahead to find the function body
           const funcBody = lines.slice(i, i + 10).join('\n');
-          
+
           // Check if there are setState calls without being in deps
           if (funcBody.match(/set[A-Z]\w+\(/) && !funcBody.match(/\[[\s\w,]*set[A-Z]/)) {
             issues.push({
@@ -32,7 +32,7 @@ export const reactRules: Rule[] = [
           }
         }
       });
-      
+
       return issues;
     }
   },
@@ -45,7 +45,7 @@ export const reactRules: Rule[] = [
     detect: (content: string) => {
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       lines.forEach((line, i) => {
         // Match key={index} or key={i}
         if (line.match(/key\s*=\s*\{\s*(?:index|i)\s*\}/)) {
@@ -58,7 +58,7 @@ export const reactRules: Rule[] = [
           });
         }
       });
-      
+
       return issues;
     }
   },
@@ -71,10 +71,10 @@ export const reactRules: Rule[] = [
     detect: (content: string) => {
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       lines.forEach((line, i) => {
         // Check for hooks inside conditionals
-        if (line.match(/if\s*\(.*\)\s*\{\s*use[A-Z]/) || 
+        if (line.match(/if\s*\(.*\)\s*\{\s*use[A-Z]/) ||
             line.match(/if\s*\(.*\)\s*use[A-Z]/)) {
           issues.push({
             id: generateId(),
@@ -96,7 +96,7 @@ export const reactRules: Rule[] = [
           });
         }
       });
-      
+
       return issues;
     }
   },
@@ -109,7 +109,7 @@ export const reactRules: Rule[] = [
     detect: (content: string) => {
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       lines.forEach((line, i) => {
         // Direct state mutation in class components
         if (line.match(/this\.state\.\w+\s*=/)) {
@@ -126,7 +126,7 @@ export const reactRules: Rule[] = [
           // More specific detection needed
         }
       });
-      
+
       return issues;
     }
   },
@@ -139,7 +139,7 @@ export const reactRules: Rule[] = [
     detect: (content: string) => {
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       lines.forEach((line, i) => {
         // Button without type
         if (line.match(/<button[^>]*>/i) && !line.match(/type\s*=/i)) {
@@ -152,7 +152,7 @@ export const reactRules: Rule[] = [
           });
         }
       });
-      
+
       return issues;
     }
   },
@@ -165,7 +165,7 @@ export const reactRules: Rule[] = [
     detect: (content: string) => {
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       lines.forEach((line, i) => {
         if (line.match(/<iframe[^>]*>/i) && !line.match(/title\s*=/i)) {
           issues.push({
@@ -177,7 +177,7 @@ export const reactRules: Rule[] = [
           });
         }
       });
-      
+
       return issues;
     }
   },
@@ -190,7 +190,7 @@ export const reactRules: Rule[] = [
     detect: (content: string) => {
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       lines.forEach((line, i) => {
         // img without alt or with empty alt when decorative
         if (line.match(/<img[^>]*>/i)) {
@@ -213,7 +213,7 @@ export const reactRules: Rule[] = [
           }
         }
       });
-      
+
       return issues;
     }
   },
@@ -226,7 +226,7 @@ export const reactRules: Rule[] = [
     detect: (content: string) => {
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       lines.forEach((line, i) => {
         // Async function in JSX prop without useCallback
         if (line.match(/on(?:Click|Change|Submit)\s*=\s*\{\s*async\s+/)) {
@@ -241,7 +241,7 @@ export const reactRules: Rule[] = [
           }
         }
       });
-      
+
       return issues;
     }
   },
@@ -254,18 +254,18 @@ export const reactRules: Rule[] = [
     detect: (content: string) => {
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       // Check for components that use props but don't have prop-types or TypeScript interfaces
       const hasPropsUsage = content.includes('this.props') || content.includes('props.');
       const hasPropTypes = content.includes('propTypes') || content.includes('PropTypes');
       const hasTypeScriptProps = content.includes('interface Props') || content.includes('type Props') || content.includes('<Props');
       const isTypeScript = content.includes(': React.FC') || content.includes('React.ComponentType') || content.match(/:\s*\w+\s*props/i);
-      
+
       // Only check functional components with props
       if (hasPropsUsage && !hasPropTypes && !hasTypeScriptProps && isTypeScript) {
         // Find the component definition
         lines.forEach((line, i) => {
-          if (line.match(/^const\s+\w+\s*=\s*\([^)]*\)\s*=>/) || 
+          if (line.match(/^const\s+\w+\s*=\s*\([^)]*\)\s*=>/) ||
               line.match(/^function\s+\w+\s*\([^)]*\)/) ||
               line.match(/= \([^)]*\)\s*=>/)) {
             issues.push({
@@ -278,7 +278,7 @@ export const reactRules: Rule[] = [
           }
         });
       }
-      
+
       // Check for destructured props without default values
       lines.forEach((line, i) => {
         const match = line.match(/const\s+\{\s*(\w+)\s*\}=\s*props/);
@@ -286,9 +286,9 @@ export const reactRules: Rule[] = [
           const propName = match[1];
           // Check if this prop is used but no default or type
           const restOfFile = lines.slice(i).join('\n');
-          if (restOfFile.includes(propName) && 
-              !line.includes('=') && 
-              !content.includes(`defaultProps`) &&
+          if (restOfFile.includes(propName) &&
+              !line.includes('=') &&
+              !content.includes('defaultProps') &&
               !content.includes('interface Props')) {
             issues.push({
               id: generateId(),
@@ -300,7 +300,7 @@ export const reactRules: Rule[] = [
           }
         }
       });
-      
+
       return issues;
     }
   },
@@ -312,7 +312,7 @@ export const reactRules: Rule[] = [
     description: '非必填 props 应提供 defaultProps',
     detect: (content: string) => {
       const issues: Issue[] = [];
-      
+
       // Check if component has prop-types but missing defaultProps for optional props
       if (content.includes('propTypes') && !content.includes('defaultProps')) {
         const lines = content.split('\n');
@@ -329,7 +329,7 @@ export const reactRules: Rule[] = [
           }
         });
       }
-      
+
       return issues;
     }
   }

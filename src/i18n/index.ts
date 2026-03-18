@@ -329,16 +329,16 @@ export function getTranslations(lang?: Language): Translations {
     if (envLang && translations[envLang as Language]) {
       return translations[envLang as Language];
     }
-    
+
     // Try to get from system
     const systemLang = Intl.DateTimeFormat().resolvedOptions().locale.split('-')[0];
     if (translations[systemLang as Language]) {
       return translations[systemLang as Language];
     }
-    
+
     return en;
   }
-  
+
   return translations[lang] || en;
 }
 
@@ -346,8 +346,8 @@ export function getTranslations(lang?: Language): Translations {
  * Interpolate translation with variables
  */
 export function t(text: string, vars?: Record<string, string | number>): string {
-  if (!vars) return text;
-  
+  if (!vars) {return text;}
+
   return text.replace(/\{(\w+)\}/g, (_, key) => String(vars[key] || `{${key}}`));
 }
 

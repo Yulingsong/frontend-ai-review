@@ -287,8 +287,9 @@ function getTranslations(lang) {
  * Interpolate translation with variables
  */
 function t(text, vars) {
-    if (!vars)
+    if (!vars) {
         return text;
+    }
     return text.replace(/\{(\w+)\}/g, (_, key) => String(vars[key] || `{${key}}`));
 }
 exports.default = exports.translations;

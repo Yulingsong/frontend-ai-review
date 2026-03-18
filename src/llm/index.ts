@@ -31,7 +31,7 @@ export class LLMAnalyzer {
     this.temperature = config.temperature || 0.7;
     this.azureEndpoint = config.azureEndpoint;
     this.azureApiVersion = config.azureApiVersion || '2024-02-15-preview';
-    
+
     // Get API key based on provider
     this.apiKey = this.getApiKey(this.provider);
   }
@@ -60,9 +60,9 @@ export class LLMAnalyzer {
    */
   async testConnection(): Promise<LLMResponse> {
     if (!this.apiKey) {
-      return { 
-        success: false, 
-        error: `请设置 ${this.provider.toUpperCase()}_API_KEY 环境变量` 
+      return {
+        success: false,
+        error: `请设置 ${this.provider.toUpperCase()}_API_KEY 环境变量`
       };
     }
 
@@ -86,7 +86,7 @@ export class LLMAnalyzer {
     }
 
     const prompt = this.buildPrompt(code);
-    
+
     try {
       switch (this.provider) {
         case 'gemini':
@@ -114,15 +114,15 @@ export class LLMAnalyzer {
    */
   async analyzeBatch(files: Array<{ path: string; content: string }>): Promise<Map<string, string>> {
     const results = new Map<string, string>();
-    
+
     // Process in parallel with concurrency limit
     const concurrency = 3;
     const chunks = [];
-    
+
     for (let i = 0; i < files.length; i += concurrency) {
       chunks.push(files.slice(i, i + concurrency));
     }
-    
+
     for (const chunk of chunks) {
       const promises = chunk.map(async (file) => {
         const analysis = await this.analyze(file.content);
@@ -130,7 +130,7 @@ export class LLMAnalyzer {
       });
       await Promise.all(promises);
     }
-    
+
     return results;
   }
 
@@ -164,11 +164,11 @@ ${code.slice(0, 3000)}`;
     });
 
     const data: any = await res.json();
-    
+
     if (data.error) {
       throw new Error(data.error.message);
     }
-    
+
     return data.choices?.[0]?.message?.content || '';
   }
 
@@ -188,11 +188,11 @@ ${code.slice(0, 3000)}`;
     });
 
     const data: any = await res.json();
-    
+
     if (data.error) {
       throw new Error(data.error.message);
     }
-    
+
     return data.content?.[0]?.text || '';
   }
 
@@ -214,11 +214,11 @@ ${code.slice(0, 3000)}`;
     );
 
     const data: any = await res.json();
-    
+
     if (data.error) {
       throw new Error(data.error.message);
     }
-    
+
     return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
   }
 
@@ -240,11 +240,11 @@ ${code.slice(0, 3000)}`;
     });
 
     const data: any = await res.json();
-    
+
     if (data.code) {
       throw new Error(data.message || 'Qwen API Error');
     }
-    
+
     return data.output?.text || '';
   }
 
@@ -254,7 +254,7 @@ ${code.slice(0, 3000)}`;
     }
 
     const url = `${this.azureEndpoint}/openai/deployments/${this.model}/chat/completions?api-version=${this.azureApiVersion}`;
-    
+
     const res = await fetch(url, {
       method: 'POST',
       headers: {
@@ -269,11 +269,11 @@ ${code.slice(0, 3000)}`;
     });
 
     const data: any = await res.json();
-    
+
     if (data.error) {
       throw new Error(data.error.message || 'Azure OpenAI Error');
     }
-    
+
     return data.choices?.[0]?.message?.content || '';
   }
 
@@ -293,11 +293,11 @@ ${code.slice(0, 3000)}`;
     });
 
     const data: any = await res.json();
-    
+
     if (data.error) {
       throw new Error(data.error.message || 'Cohere API Error');
     }
-    
+
     return data.text || '';
   }
 
@@ -317,11 +317,11 @@ ${code.slice(0, 3000)}`;
     });
 
     const data: any = await res.json();
-    
+
     if (data.error) {
       throw new Error(data.error.message || 'Mistral API Error');
     }
-    
+
     return data.choices?.[0]?.message?.content || '';
   }
 }

@@ -260,7 +260,7 @@ exports.bestPracticeRules = [
                 const currentType = typeOrder[imp.type];
                 if (currentType < lastType) {
                     const expectedOrder = Object.entries(typeOrder)
-                        .filter(([_, v]) => v < currentType)
+                        .filter(([, v]) => v < currentType)
                         .map(([k]) => k)
                         .join(' → ');
                     issues.push({

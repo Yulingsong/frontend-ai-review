@@ -43,7 +43,7 @@ describe('Utils', () => {
     const hash1 = calculateFileHash('hello world');
     const hash2 = calculateFileHash('hello world');
     const hash3 = calculateFileHash('different');
-    
+
     expect(hash1).toBe(hash2);
     expect(hash1).not.toBe(hash3);
   });
@@ -80,7 +80,7 @@ describe('Rules', () => {
       category: ['security'],
       severity: 'error'
     });
-    
+
     expect(filtered.every(r => r.category === 'security')).toBe(true);
   });
 
@@ -101,42 +101,42 @@ describe('Security Rules', () => {
   it('should detect hardcoded credentials', () => {
     const securityRules = getRulesByCategory('security');
     const hardcodedRule = securityRules.find(r => r.id === 'security/hardcoded-credentials');
-    
+
     expect(hardcodedRule).toBeDefined();
-    
+
     const code = 'const apiKey = "sk-1234567890";';
     const issues = hardcodedRule!.detect(code, 'test.ts');
-    
+
     expect(issues.length).toBeGreaterThan(0);
   });
 
   it('should detect eval usage', () => {
     const securityRules = getRulesByCategory('security');
     const evalRule = securityRules.find(r => r.id === 'security/eval');
-    
+
     const code = 'eval("alert(1)")';
     const issues = evalRule!.detect(code, 'test.js');
-    
+
     expect(issues.length).toBeGreaterThan(0);
   });
 
   it('should detect SQL injection', () => {
     const securityRules = getRulesByCategory('security');
     const sqlRule = securityRules.find(r => r.id === 'security/sql-injection');
-    
+
     const code = 'const query = "SELECT * FROM users WHERE id = " + userId;';
     const issues = sqlRule!.detect(code, 'test.js');
-    
+
     expect(issues.length).toBeGreaterThan(0);
   });
 
   it('should detect SQL injection with template literal', () => {
     const securityRules = getRulesByCategory('security');
     const sqlRule = securityRules.find(r => r.id === 'security/sql-injection');
-    
+
     const code = 'const query = `SELECT * FROM users WHERE id = ${userId}`;';
     const issues = sqlRule!.detect(code, 'test.js');
-    
+
     expect(issues.length).toBeGreaterThan(0);
   });
 });
@@ -145,20 +145,20 @@ describe('React Rules', () => {
   it('should detect missing key in list', () => {
     const reactRules = getRulesByCategory('react');
     const keyRule = reactRules.find(r => r.id === 'react/no-array-index-key');
-    
+
     const code = '{items.map((item, index) => <div key={index}>...</div>)}';
     const issues = keyRule!.detect(code, 'test.tsx');
-    
+
     expect(issues.length).toBeGreaterThan(0);
   });
 
   it('should detect button without type', () => {
     const reactRules = getRulesByCategory('react');
     const buttonRule = reactRules.find(r => r.id === 'react/button-has-type');
-    
+
     const code = '<button>Click me</button>';
     const issues = buttonRule!.detect(code, 'test.tsx');
-    
+
     expect(issues.length).toBeGreaterThan(0);
   });
 });
@@ -167,20 +167,20 @@ describe('Vue Rules', () => {
   it('should detect v-for without key', () => {
     const vueRules = getRulesByCategory('vue');
     const keyRule = vueRules.find(r => r.id === 'vue/v-for-key');
-    
+
     const code = '<div v-for="item in items">...</div>';
     const issues = keyRule!.detect(code, 'test.vue');
-    
+
     expect(issues.length).toBeGreaterThan(0);
   });
 
   it('should detect v-for with v-if', () => {
     const vueRules = getRulesByCategory('vue');
     const vifRule = vueRules.find(r => r.id === 'vue/v-if-with-v-for');
-    
+
     const code = '<div v-for="item in items" v-if="item.show">...</div>';
     const issues = vifRule!.detect(code, 'test.vue');
-    
+
     expect(issues.length).toBeGreaterThan(0);
   });
 });
@@ -189,10 +189,10 @@ describe('Performance Rules', () => {
   it('should detect console.log', () => {
     const perfRules = getRulesByCategory('performance');
     const consoleRule = perfRules.find(r => r.id === 'perf/console-log');
-    
+
     const code = 'console.log("debug")';
     const issues = consoleRule!.detect(code, 'test.js');
-    
+
     expect(issues.length).toBeGreaterThan(0);
     expect(issues[0].fixable).toBe(true);
   });
@@ -202,22 +202,22 @@ describe('Best Practice Rules', () => {
   it('should detect import order issues', () => {
     const bpRules = getRulesByCategory('best-practice');
     const importRule = bpRules.find(r => r.id === 'best-practice/import-order');
-    
+
     const code = `import React from 'react';
 import './style.css';
 import utils from './utils';`;
     const issues = importRule!.detect(code, 'test.ts');
-    
+
     expect(issues.length).toBeGreaterThan(0);
   });
 
   it('should detect empty catch block', () => {
     const bpRules = getRulesByCategory('best-practice');
     const catchRule = bpRules.find(r => r.id === 'best-practice/empty-catch');
-    
+
     const code = 'try { doSomething(); } catch {}';
     const issues = catchRule!.detect(code, 'test.js');
-    
+
     expect(issues.length).toBeGreaterThan(0);
   });
 });

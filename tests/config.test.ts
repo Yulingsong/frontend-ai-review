@@ -5,7 +5,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import * as fs from 'fs';
 import * as path from 'path';
-import { 
+import {
   loadConfig,
   mergeConfig,
   validateConfig,
@@ -24,10 +24,10 @@ describe('Config', () => {
 
   describe('loadConfig', () => {
     it('should load config from file', () => {
-      fs.writeFileSync(testConfigPath, JSON.stringify({ 
-        rules: ['no-console'] 
+      fs.writeFileSync(testConfigPath, JSON.stringify({
+        rules: ['no-console']
       }));
-      
+
       const config = loadConfig(testConfigPath);
       expect(config.rules).toContain('no-console');
     });
@@ -42,7 +42,7 @@ describe('Config', () => {
     it('should merge configs', () => {
       const base = { rules: ['no-console'], severity: 'error' };
       const override = { rules: ['no-debugger'] };
-      
+
       const merged = mergeConfig(base, override);
       expect(merged.rules).toContain('no-console');
       expect(merged.rules).toContain('no-debugger');

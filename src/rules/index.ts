@@ -21,7 +21,7 @@ export const allRules = [
 // Categories
 export const categories = [
   'react',
-  'vue', 
+  'vue',
   'typescript',
   'security',
   'performance',
@@ -64,20 +64,20 @@ export function filterRules(
   }
 ): Rule[] {
   let filtered = [...rules];
-  
+
   if (options.category && options.category.length > 0) {
     filtered = filtered.filter(r => options.category!.includes(r.category));
   }
-  
+
   if (options.rules && options.rules.length > 0) {
     filtered = filtered.filter(r => options.rules!.includes(r.id));
   }
-  
+
   if (options.severity) {
     const minLevel = getSeverityLevelNum(options.severity);
     filtered = filtered.filter(r => getSeverityLevelNum(r.severity) >= minLevel);
   }
-  
+
   return filtered;
 }
 

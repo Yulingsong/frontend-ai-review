@@ -4,66 +4,66 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.FAIRRC_SCHEMA = void 0;
 exports.validateConfig = validateConfig;
 exports.FAIRRC_SCHEMA = {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "Frontend AI Review Configuration",
-    "type": "object",
-    "properties": {
-        "severity": {
-            "type": "string",
-            "enum": ["error", "warning", "suggestion"],
-            "default": "suggestion",
-            "description": "Minimum severity level to report"
+    '$schema': 'http://json-schema.org/draft-07/schema#',
+    'title': 'Frontend AI Review Configuration',
+    'type': 'object',
+    'properties': {
+        'severity': {
+            'type': 'string',
+            'enum': ['error', 'warning', 'suggestion'],
+            'default': 'suggestion',
+            'description': 'Minimum severity level to report'
         },
-        "output": {
-            "type": "string",
-            "enum": ["text", "json", "github"],
-            "default": "text",
-            "description": "Output format"
+        'output': {
+            'type': 'string',
+            'enum': ['text', 'json', 'github'],
+            'default': 'text',
+            'description': 'Output format'
         },
-        "exclude": {
-            "type": "array",
-            "items": { "type": "string" },
-            "default": ["node_modules/**", "dist/**", "build/**"],
-            "description": "Glob patterns to exclude"
+        'exclude': {
+            'type': 'array',
+            'items': { 'type': 'string' },
+            'default': ['node_modules/**', 'dist/**', 'build/**'],
+            'description': 'Glob patterns to exclude'
         },
-        "category": {
-            "type": "array",
-            "items": {
-                "type": "string",
-                "enum": ["react", "vue", "typescript", "security", "performance", "best-practice"]
+        'category': {
+            'type': 'array',
+            'items': {
+                'type': 'string',
+                'enum': ['react', 'vue', 'typescript', 'security', 'performance', 'best-practice']
             },
-            "description": "Categories to enable"
+            'description': 'Categories to enable'
         },
-        "rules": {
-            "type": "array",
-            "items": { "type": "string" },
-            "description": "Specific rules to enable (overrides category)"
+        'rules': {
+            'type': 'array',
+            'items': { 'type': 'string' },
+            'description': 'Specific rules to enable (overrides category)'
         },
-        "ai": {
-            "type": "boolean",
-            "default": false,
-            "description": "Enable AI-powered analysis"
+        'ai': {
+            'type': 'boolean',
+            'default': false,
+            'description': 'Enable AI-powered analysis'
         },
-        "aiModel": {
-            "type": "string",
-            "default": "gpt-4o-mini",
-            "description": "AI model to use"
+        'aiModel': {
+            'type': 'string',
+            'default': 'gpt-4o-mini',
+            'description': 'AI model to use'
         },
-        "aiProvider": {
-            "type": "string",
-            "enum": ["openai", "anthropic", "gemini", "qwen"],
-            "default": "openai",
-            "description": "AI provider"
+        'aiProvider': {
+            'type': 'string',
+            'enum': ['openai', 'anthropic', 'gemini', 'qwen'],
+            'default': 'openai',
+            'description': 'AI provider'
         },
-        "parallel": {
-            "type": "boolean",
-            "default": false,
-            "description": "Enable parallel processing"
+        'parallel': {
+            'type': 'boolean',
+            'default': false,
+            'description': 'Enable parallel processing'
         },
-        "cache": {
-            "type": "boolean",
-            "default": false,
-            "description": "Enable caching for incremental analysis"
+        'cache': {
+            'type': 'boolean',
+            'default': false,
+            'description': 'Enable caching for incremental analysis'
         }
     }
 };

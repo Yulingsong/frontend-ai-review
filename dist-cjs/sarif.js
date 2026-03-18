@@ -12,8 +12,9 @@ function outputSarif(results, projectPath, options = {}) {
     // Convert issues to SARIF format
     const resultsList = [];
     for (const result of results) {
-        if (result.issues.length === 0)
+        if (result.issues.length === 0) {
             continue;
+        }
         const filePath = (0, index_js_1.getRelativePath)(result.file, projectPath);
         for (const issue of result.issues) {
             resultsList.push({

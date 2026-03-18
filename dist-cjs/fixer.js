@@ -55,8 +55,9 @@ class AutoFixer {
             failed: 0,
             errors: []
         };
-        if (!issues.length)
+        if (!issues.length) {
             return result;
+        }
         let content;
         try {
             content = fs.readFileSync(filePath, 'utf-8');

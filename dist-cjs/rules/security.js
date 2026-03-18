@@ -207,7 +207,7 @@ exports.securityRules = [
             const weakAlgos = ['md5', 'sha1', 'des', 'rc4'];
             lines.forEach((line, i) => {
                 for (const algo of weakAlgos) {
-                    if (line.match(new RegExp(algo, 'i')) && line.includes("'")) {
+                    if (line.match(new RegExp(algo, 'i')) && line.includes('\'')) {
                         issues.push({
                             id: (0, index_js_1.generateId)(),
                             ruleId: 'security/weak-crypto',

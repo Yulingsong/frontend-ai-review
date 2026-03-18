@@ -15,17 +15,17 @@ export function generateId(): string {
  * Detect the frontend framework from package.json
  */
 export function detectFramework(packageJson: Record<string, unknown> | null): string {
-  if (!packageJson?.dependencies) return 'unknown';
-  const deps = { 
-    ...(packageJson.dependencies as Record<string, string>), 
-    ...(packageJson.devDependencies as Record<string, string>) 
+  if (!packageJson?.dependencies) {return 'unknown';}
+  const deps = {
+    ...(packageJson.dependencies as Record<string, string>),
+    ...(packageJson.devDependencies as Record<string, string>)
   };
-  
-  if (deps.next || deps['next-auth']) return 'next';
-  if (deps.nuxt || deps.nuxt3) return 'nuxt';
-  if (deps.vue && !deps.nuxt) return 'vue';
-  if (deps.react && !deps.next) return 'react';
-  if (deps.svelte && !deps.nuxt) return 'svelte';
+
+  if (deps.next || deps['next-auth']) {return 'next';}
+  if (deps.nuxt || deps.nuxt3) {return 'nuxt';}
+  if (deps.vue && !deps.nuxt) {return 'vue';}
+  if (deps.react && !deps.next) {return 'react';}
+  if (deps.svelte && !deps.nuxt) {return 'svelte';}
   return 'unknown';
 }
 
@@ -91,8 +91,8 @@ export function getRelativePath(filePath: string, projectPath: string): string {
  * Format file size for display
  */
 export function formatFileSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  if (bytes < 1024) {return `${bytes} B`;}
+  if (bytes < 1024 * 1024) {return `${(bytes / 1024).toFixed(1)} KB`;}
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
@@ -100,7 +100,7 @@ export function formatFileSize(bytes: number): string {
  * Truncate string with ellipsis
  */
 export function truncate(str: string, maxLength: number): string {
-  if (str.length <= maxLength) return str;
+  if (str.length <= maxLength) {return str;}
   return str.slice(0, maxLength - 3) + '...';
 }
 
@@ -111,7 +111,7 @@ export function extractCodeSnippet(content: string, line: number, context: numbe
   const lines = content.split('\n');
   const start = Math.max(0, line - context - 1);
   const end = Math.min(lines.length, line + context);
-  
+
   return lines.slice(start, end)
     .map((l, i) => {
       const lineNum = start + i + 1;
@@ -142,11 +142,11 @@ export class ProgressBar {
     const elapsed = Date.now() - this.startTime;
     const rate = this.current / (elapsed / 1000);
     const remaining = this.current === 0 ? 0 : Math.round((this.total - this.current) / rate);
-    
+
     const barWidth = 20;
     const filled = Math.round((current / this.total) * barWidth);
     const bar = '█'.repeat(filled) + '░'.repeat(barWidth - filled);
-    
+
     process.stdout.write(`\r${pc.cyan(this.label)}: [${bar}] ${percent}% (${current}/${this.total}) ETA: ${remaining}s`);
   }
 
@@ -166,7 +166,7 @@ export const logger = {
   warn: (msg: string) => console.log(pc.yellow('⚠ ') + msg),
   error: (msg: string) => console.log(pc.red('✗ ') + msg),
   debug: (msg: string) => {
-    if (process.env.DEBUG) console.log(pc.dim('🔍 ') + msg);
+    if (process.env.DEBUG) {console.log(pc.dim('🔍 ') + msg);}
   }
 };
 

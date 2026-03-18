@@ -15,7 +15,7 @@ export const performanceRules: Rule[] = [
     detect: (content: string) => {
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       lines.forEach((line, i) => {
         if (line.match(/console\.(log|debug|info)\(/) && !line.includes('//') && !line.includes('/*')) {
           issues.push({
@@ -29,7 +29,7 @@ export const performanceRules: Rule[] = [
           });
         }
       });
-      
+
       return issues;
     }
   },
@@ -42,7 +42,7 @@ export const performanceRules: Rule[] = [
     detect: (content: string) => {
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       lines.forEach((line, i) => {
         // onClick={function() or onClick={() =>
         if (line.match(/on(?:Click|Change|Submit|MouseEnter|Input)=\{/)) {
@@ -57,7 +57,7 @@ export const performanceRules: Rule[] = [
           }
         }
       });
-      
+
       return issues;
     }
   },
@@ -71,7 +71,7 @@ export const performanceRules: Rule[] = [
       const issues: Issue[] = [];
       const lines = content.split('\n');
       let inLoop = false;
-      
+
       lines.forEach((line, i) => {
         if (line.match(/for\s*\(/) || line.match(/while\s*\(/)) {
           inLoop = true;
@@ -89,7 +89,7 @@ export const performanceRules: Rule[] = [
           });
         }
       });
-      
+
       return issues;
     }
   },
@@ -102,7 +102,7 @@ export const performanceRules: Rule[] = [
     detect: (content: string) => {
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       lines.forEach((line, i) => {
         if (line.includes('Object.assign(')) {
           issues.push({
@@ -114,7 +114,7 @@ export const performanceRules: Rule[] = [
           });
         }
       });
-      
+
       return issues;
     }
   },
@@ -127,7 +127,7 @@ export const performanceRules: Rule[] = [
     detect: (content: string) => {
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       lines.forEach((line, i) => {
         // Check for .filter().map() - can be combined into .flatMap()
         if (line.includes('.filter(') && line.includes('.map(')) {
@@ -150,7 +150,7 @@ export const performanceRules: Rule[] = [
           });
         }
       });
-      
+
       return issues;
     }
   },
@@ -163,7 +163,7 @@ export const performanceRules: Rule[] = [
     detect: (content: string) => {
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       // Check for component without React.memo
       lines.forEach((line, i) => {
         if (line.match(/^const\s+\w+\s*=\s*\([^)]*\)\s*=>/) || line.match(/^function\s+\w+\s*\(/)) {
@@ -180,7 +180,7 @@ export const performanceRules: Rule[] = [
           }
         }
       });
-      
+
       return issues;
     }
   },
@@ -193,7 +193,7 @@ export const performanceRules: Rule[] = [
     detect: (content: string) => {
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       lines.forEach((line, i) => {
         // .map without key
         if (line.includes('.map(') && !line.includes('key=')) {
@@ -210,7 +210,7 @@ export const performanceRules: Rule[] = [
           }
         }
       });
-      
+
       return issues;
     }
   }

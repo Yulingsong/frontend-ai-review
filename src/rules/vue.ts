@@ -13,7 +13,7 @@ export const vueRules: Rule[] = [
     detect: (content: string) => {
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       lines.forEach((line, i) => {
         // ref used without .value in script
         if (line.match(/ref\.\w+\.value/) && !line.includes('const ') && !line.includes('let ')) {
@@ -26,7 +26,7 @@ export const vueRules: Rule[] = [
           });
         }
       });
-      
+
       return issues;
     }
   },
@@ -38,12 +38,12 @@ export const vueRules: Rule[] = [
     description: 'Props 应有默认值或标记为 required',
     detect: (content: string) => {
       const issues: Issue[] = [];
-      
+
       // Check for props definition without defaults
       const propsMatch = content.match(/props\s*:\s*\{([^}]+)\}/s);
       if (propsMatch) {
         const propLines = propsMatch[0].split('\n');
-        
+
         propLines.forEach((line) => {
           // Prop without type or default
           if (line.trim() && !line.includes(':') && !line.includes('default') && !line.includes('required')) {
@@ -60,7 +60,7 @@ export const vueRules: Rule[] = [
           }
         });
       }
-      
+
       return issues;
     }
   },
@@ -73,7 +73,7 @@ export const vueRules: Rule[] = [
     detect: (content: string) => {
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       lines.forEach((line, i) => {
         // v-for without key - improved pattern matching
         // Match v-for="..." but not :key="..."
@@ -86,7 +86,7 @@ export const vueRules: Rule[] = [
             location: { start: { line: i + 1, column: 0 }, end: { line: i + 1, column: 0 } }
           });
         }
-        
+
         // Check for key using index - warning about potential issue
         if (line.includes('v-for=') && line.match(/key\s*=\s*["']?\{\s*\(?\s*index/i)) {
           issues.push({
@@ -98,7 +98,7 @@ export const vueRules: Rule[] = [
           });
         }
       });
-      
+
       return issues;
     }
   },
@@ -111,7 +111,7 @@ export const vueRules: Rule[] = [
     detect: (content: string) => {
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       lines.forEach((line, i) => {
         // v-for with v-if on the same element - performance issue
         if (line.includes('v-for=') && line.includes('v-if=')) {
@@ -124,7 +124,7 @@ export const vueRules: Rule[] = [
           });
         }
       });
-      
+
       return issues;
     }
   },
@@ -136,7 +136,7 @@ export const vueRules: Rule[] = [
     description: 'data 选项应返回一个函数（组件中）',
     detect: (content: string) => {
       const issues: Issue[] = [];
-      
+
       // Check if it's a component (has component options)
       if (content.includes('export default') || content.includes('defineComponent')) {
         const dataMatch = content.match(/data\s*\(\s*\)\s*\{([^}]+)\}/s);
@@ -150,7 +150,7 @@ export const vueRules: Rule[] = [
           });
         }
       }
-      
+
       return issues;
     }
   },
@@ -163,7 +163,7 @@ export const vueRules: Rule[] = [
     detect: (content: string) => {
       const issues: Issue[] = [];
       const lines = content.split('\n');
-      
+
       lines.forEach((line, i) => {
         // Mutating props directly
         if (line.match(/this\.\w+\s*=\s*/) && line.match(/props/i)) {
@@ -176,7 +176,7 @@ export const vueRules: Rule[] = [
           });
         }
       });
-      
+
       return issues;
     }
   }

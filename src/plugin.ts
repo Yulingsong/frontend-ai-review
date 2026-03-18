@@ -47,7 +47,7 @@ export interface PluginHooks {
 export class PluginManager {
   private plugins: Map<string, FairPlugin> = new Map();
   private pluginPaths: string[] = [];
-  
+
   constructor() {
     // Default plugin directories
     this.pluginPaths = [
@@ -55,7 +55,7 @@ export class PluginManager {
       path.join(process.env.HOME || '', '.fair', 'plugins'),
     ];
   }
-  
+
   /**
    * Add plugin directory
    */
@@ -64,7 +64,7 @@ export class PluginManager {
       this.pluginPaths.push(pluginPath);
     }
   }
-  
+
   /**
    * Load plugin from file
    */
@@ -72,32 +72,32 @@ export class PluginManager {
     try {
       // Try different extensions
       const extensions = ['.js', '.ts', '.mjs', '.cjs'];
-      
+
       for (const ext of extensions) {
         const fullPath = pluginPath + ext;
-        
+
         if (fs.existsSync(fullPath)) {
           const module = await import(fullPath);
           const plugin: FairPlugin = module.default || module;
-          
+
           if (!plugin.name) {
             console.warn(pc.yellow(`⚠️ Plugin at ${fullPath} missing name, skipping`));
             return null;
           }
-          
+
           this.plugins.set(plugin.name, plugin);
           console.log(pc.green(`✅ Loaded plugin: ${plugin.name} v${plugin.version || '?'}`));
           return plugin;
         }
       }
-      
+
       return null;
     } catch (e) {
       console.error(pc.red(`❌ Failed to load plugin from ${pluginPath}:`), e);
       return null;
     }
   }
-  
+
   /**
    * Load all plugins from plugin directories
    */
@@ -106,57 +106,57 @@ export class PluginManager {
       if (!fs.existsSync(pluginDir)) {
         continue;
       }
-      
+
       const files = fs.readdirSync(pluginDir);
-      
+
       for (const file of files) {
         const fullPath = path.join(pluginDir, file);
         const stat = fs.statSync(fullPath);
-        
+
         if (stat.isFile() && (file.endsWith('.js') || file.endsWith('.ts') || file.endsWith('.mjs'))) {
           await this.loadPlugin(path.join(pluginDir, path.basename(file, path.extname(file))));
         }
       }
     }
   }
-  
+
   /**
    * Load plugin by name
    */
   async loadPluginByName(name: string): Promise<FairPlugin | null> {
     for (const pluginDir of this.pluginPaths) {
       const files = fs.readdirSync(pluginDir).filter(f => f.endsWith('.js') || f.endsWith('.ts'));
-      
+
       for (const file of files) {
         if (file.toLowerCase().includes(name.toLowerCase())) {
           return this.loadPlugin(path.join(pluginDir, path.basename(file, path.extname(file))));
         }
       }
     }
-    
+
     return null;
   }
-  
+
   /**
    * Get all loaded plugins
    */
   getPlugins(): Map<string, FairPlugin> {
     return this.plugins;
   }
-  
+
   /**
    * Get plugin by name
    */
   getPlugin(name: string): FairPlugin | undefined {
     return this.plugins.get(name);
   }
-  
+
   /**
    * Get all rules from plugins
    */
   getPluginRules(): Rule[] {
     const rules: Rule[] = [];
-    
+
     for (const plugin of this.plugins.values()) {
       if (plugin.rules) {
         for (const rule of plugin.rules) {
@@ -172,56 +172,56 @@ export class PluginManager {
         }
       }
     }
-    
+
     return rules;
   }
-  
+
   /**
    * Get hook by name
    */
   getHook(hookName: keyof PluginHooks): PluginHooks[keyof PluginHooks][] {
     const hooks: Array<PluginHooks[keyof PluginHooks]> = [];
-    
+
     for (const plugin of this.plugins.values()) {
       if (plugin.hooks && plugin.hooks[hookName]) {
         hooks.push(plugin.hooks[hookName]!);
       }
     }
-    
+
     return hooks;
   }
-  
+
   /**
    * Execute hook
    */
   async executeHook<T>(hookName: keyof PluginHooks, ...args: unknown[]): Promise<T | undefined> {
     const hooks = this.getHook(hookName);
-    
+
     if (hooks.length === 0) {
       return undefined;
     }
-    
+
     let result: T | undefined;
-    
+
     for (const hook of hooks) {
       // @ts-ignore - dynamic function call
       result = await hook(...args);
     }
-    
+
     return result;
   }
-  
+
   /**
    * List loaded plugins
    */
   listPlugins(): void {
     console.log(pc.bold('\n📦 Loaded Plugins:'));
-    
+
     if (this.plugins.size === 0) {
       console.log(pc.gray('  No plugins loaded'));
       return;
     }
-    
+
     for (const [name, plugin] of this.plugins) {
       console.log(`  ${pc.cyan(name)} v${plugin.version || '?'}`);
       if (plugin.description) {

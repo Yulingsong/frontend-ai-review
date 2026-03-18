@@ -7,11 +7,11 @@ import pc from 'picocolors';
 import { allRules, filterRules, getRuleStats } from './rules/index.js';
 import { LLMAnalyzer } from './llm/index.js';
 import { calculateFileHash, ProgressBar, getRelativePath, logger, getChangedFiles, isGitRepo, filterByExtensions, extractCodeSnippet, getSeverityLevel } from './utils/index.js';
-import type { 
-  Issue, 
-  Rule, 
-  AnalysisResult, 
-  SummaryStats, 
+import type {
+  Issue,
+  Rule,
+  AnalysisResult,
+  SummaryStats,
   CLIOptions
 } from './types/index.js';
 
@@ -30,7 +30,7 @@ export class Analyzer {
   private llm: LLMAnalyzer | null = null;
   private fileCache: Map<string, FileCache> = new Map();
   private cacheAccessOrder: string[] = []; // Track access order for LRU
-  
+
   // File patterns to analyze
   private readonly patterns = ['**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx', '**/*.vue', '**/*.svelte'];
   private readonly defaultExclude = ['node_modules/**', 'dist/**', 'build/**', '.next/**', '.git/**', 'coverage/**'];
@@ -82,11 +82,11 @@ export class Analyzer {
     if (this.options.git || this.options.gitStaged || this.options.gitBranch || this.options.gitSince) {
       return this.getGitFiles();
     }
-    
+
     // Standard file discovery
     const exclude = [...this.defaultExclude, ...this.options.exclude];
     const files: string[] = [];
-    
+
     for (const pattern of this.patterns) {
       const matched = await glob(pattern, {
         cwd: this.options.projectPath,
@@ -95,7 +95,7 @@ export class Analyzer {
       });
       files.push(...matched);
     }
-    
+
     return [...new Set(files)];
   }
 
@@ -143,7 +143,7 @@ export class Analyzer {
   private async getStandardFiles(): Promise<string[]> {
     const exclude = [...this.defaultExclude, ...this.options.exclude];
     const files: string[] = [];
-    
+
     for (const pattern of this.patterns) {
       const matched = await glob(pattern, {
         cwd: this.options.projectPath,
@@ -152,7 +152,7 @@ export class Analyzer {
       });
       files.push(...matched);
     }
-    
+
     return [...new Set(files)];
   }
 
@@ -161,16 +161,16 @@ export class Analyzer {
    */
   async analyze(): Promise<AnalysisResult[]> {
     const files = await this.getFiles();
-    
+
     logger.info(`Found ${files.length} files to analyze`);
-    
+
     if (files.length === 0) {
       return [];
     }
 
     const results: AnalysisResult[] = [];
     const progress = new ProgressBar(files.length, 'Analyzing');
-    
+
     if (this.options.parallel) {
       // Parallel processing
       results.push(...await this.analyzeParallel(files, progress));
@@ -178,9 +178,9 @@ export class Analyzer {
       // Sequential processing
       results.push(...await this.analyzeSequential(files, progress));
     }
-    
+
     progress.complete();
-    
+
     return results;
   }
 
@@ -234,7 +234,7 @@ export class Analyzer {
   private async analyzeFile(filePath: string, minSeverity: number): Promise<AnalysisResult | null> {
     try {
       const content = fs.readFileSync(filePath, 'utf-8');
-      
+
       // Check cache
       if (this.options.cache) {
         const hash = calculateFileHash(content);
@@ -314,10 +314,10 @@ export class Analyzer {
 
     for (const result of results) {
       for (const issue of result.issues) {
-        if (issue.severity === 'error') stats.errorCount++;
-        if (issue.severity === 'warning') stats.warningCount++;
-        if (issue.severity === 'suggestion') stats.suggestionCount++;
-        
+        if (issue.severity === 'error') {stats.errorCount++;}
+        if (issue.severity === 'warning') {stats.warningCount++;}
+        if (issue.severity === 'suggestion') {stats.suggestionCount++;}
+
         // Count by category (extract from ruleId)
         const category = issue.ruleId.split('/')[0];
         stats.byCategory[category] = (stats.byCategory[category] || 0) + 1;
@@ -375,7 +375,7 @@ export class Analyzer {
 
     // Results with issues
     for (const { file, issues } of results) {
-      if (issues.length === 0) continue;
+      if (issues.length === 0) {continue;}
 
       console.log(pc.bold(`\n📁 ${getRelativePath(file, this.options.projectPath)}`));
       console.log(pc.dim('─'.repeat(50)));
@@ -383,10 +383,10 @@ export class Analyzer {
       for (const issue of issues) {
         const icon = issue.severity === 'error' ? '🔴' : issue.severity === 'warning' ? '🟡' : '🔵';
         const color = issue.severity === 'error' ? red : issue.severity === 'warning' ? yellow : blue;
-        
+
         console.log(`${icon} ${color(issue.ruleId)} ${pc.dim('line ' + issue.location.start.line)}`);
         console.log(`   ${issue.message}`);
-        
+
         // Show code snippet
         try {
           const content = fs.readFileSync(file, 'utf-8');
@@ -395,7 +395,7 @@ export class Analyzer {
         } catch {
           // Ignore if can't read file
         }
-        
+
         if (issue.fixable) {
           console.log(pc.green(`   💡 可修复: ${issue.fix}`));
         }
