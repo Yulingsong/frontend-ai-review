@@ -14,6 +14,43 @@ export interface LLMConfig {
   azureApiVersion?: string;
 }
 
+// Type definitions for API responses
+interface OpenAIResponse {
+  choices?: Array<{ message?: { content?: string } }>;
+  error?: { message?: string };
+}
+
+interface AnthropicResponse {
+  content?: Array<{ text?: string }>;
+  error?: { message?: string };
+}
+
+interface GeminiResponse {
+  candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+  error?: { message?: string };
+}
+
+interface QwenResponse {
+  output?: { text?: string };
+  code?: number;
+  message?: string;
+}
+
+interface AzureResponse {
+  choices?: Array<{ message?: { content?: string } }>;
+  error?: { message?: string };
+}
+
+interface CohereResponse {
+  text?: string;
+  error?: { message?: string };
+}
+
+interface MistralResponse {
+  choices?: Array<{ message?: { content?: string } }>;
+  error?: { message?: string };
+}
+
 export class LLMAnalyzer {
   private apiKey: string;
   private model: string;
@@ -163,7 +200,7 @@ ${code.slice(0, 3000)}`;
       })
     });
 
-    const data: any = await res.json();
+    const data = await res.json() as OpenAIResponse;
 
     if (data.error) {
       throw new Error(data.error.message);
@@ -187,7 +224,7 @@ ${code.slice(0, 3000)}`;
       })
     });
 
-    const data: any = await res.json();
+    const data = await res.json() as AnthropicResponse;
 
     if (data.error) {
       throw new Error(data.error.message);
@@ -213,7 +250,7 @@ ${code.slice(0, 3000)}`;
       }
     );
 
-    const data: any = await res.json();
+    const data = await res.json() as GeminiResponse;
 
     if (data.error) {
       throw new Error(data.error.message);
@@ -239,7 +276,7 @@ ${code.slice(0, 3000)}`;
       })
     });
 
-    const data: any = await res.json();
+    const data = await res.json() as QwenResponse;
 
     if (data.code) {
       throw new Error(data.message || 'Qwen API Error');
@@ -268,7 +305,7 @@ ${code.slice(0, 3000)}`;
       })
     });
 
-    const data: any = await res.json();
+    const data = await res.json() as AzureResponse;
 
     if (data.error) {
       throw new Error(data.error.message || 'Azure OpenAI Error');
@@ -292,7 +329,7 @@ ${code.slice(0, 3000)}`;
       })
     });
 
-    const data: any = await res.json();
+    const data = await res.json() as CohereResponse;
 
     if (data.error) {
       throw new Error(data.error.message || 'Cohere API Error');
@@ -316,7 +353,7 @@ ${code.slice(0, 3000)}`;
       })
     });
 
-    const data: any = await res.json();
+    const data = await res.json() as MistralResponse;
 
     if (data.error) {
       throw new Error(data.error.message || 'Mistral API Error');
