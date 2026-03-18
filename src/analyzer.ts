@@ -6,32 +6,49 @@ import { glob } from 'glob';
 import pc from 'picocolors';
 import { allRules, filterRules, getRuleStats } from './rules/index.js';
 import { LLMAnalyzer } from './llm/index.js';
-import { calculateFileHash, ProgressBar, getRelativePath, logger, getChangedFiles, isGitRepo, filterByExtensions, extractCodeSnippet } from './utils/index.js';
+import { calculateFileHash, ProgressBar, getRelativePath, logger, getChangedFiles, isGitRepo, filterByExtensions, extractCodeSnippet, getSeverityLevel } from './utils/index.js';
 import type { 
   Issue, 
   Rule, 
   AnalysisResult, 
   SummaryStats, 
-  CLIOptions,
-  SeverityLevel 
+  CLIOptions
 } from './types/index.js';
 
-// File cache for incremental analysis
+// File cache for incremental analysis (LRU limited)
 interface FileCache {
   hash: string;
   issues: Issue[];
   timestamp: number;
 }
 
+const MAX_CACHE_SIZE = 500; // Max files to cache
+
 export class Analyzer {
   private options: CLIOptions;
   private rules: Rule[] = [];
   private llm: LLMAnalyzer | null = null;
   private fileCache: Map<string, FileCache> = new Map();
+  private cacheAccessOrder: string[] = []; // Track access order for LRU
   
   // File patterns to analyze
   private readonly patterns = ['**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx', '**/*.vue', '**/*.svelte'];
   private readonly defaultExclude = ['node_modules/**', 'dist/**', 'build/**', '.next/**', '.git/**', 'coverage/**'];
+
+  /**
+   * LRU cache set with size limit
+   */
+  private setCache(filePath: string, cache: FileCache): void {
+    // Remove oldest entries if cache is full
+    while (this.fileCache.size >= MAX_CACHE_SIZE) {
+      const oldest = this.cacheAccessOrder.shift();
+      if (oldest) {
+        this.fileCache.delete(oldest);
+      }
+    }
+    this.fileCache.set(filePath, cache);
+    this.cacheAccessOrder.push(filePath);
+  }
 
   constructor(options: CLIOptions) {
     this.options = options;
@@ -172,7 +189,7 @@ export class Analyzer {
    */
   private async analyzeSequential(files: string[], progress: ProgressBar): Promise<AnalysisResult[]> {
     const results: AnalysisResult[] = [];
-    const minSev = this.getSeverityLevel(this.options.severity);
+    const minSev = getSeverityLevel(this.options.severity);
 
     for (let i = 0; i < files.length; i++) {
       progress.update(i + 1);
@@ -191,7 +208,7 @@ export class Analyzer {
   private async analyzeParallel(files: string[], progress: ProgressBar): Promise<AnalysisResult[]> {
     const concurrency = Math.min(10, files.length);
     const results: AnalysisResult[] = [];
-    const minSev = this.getSeverityLevel(this.options.severity);
+    const minSev = getSeverityLevel(this.options.severity);
     let completed = 0;
 
     const worker = async (file: string): Promise<AnalysisResult | null> => {
@@ -223,6 +240,9 @@ export class Analyzer {
         const hash = calculateFileHash(content);
         const cached = this.fileCache.get(filePath);
         if (cached && cached.hash === hash) {
+          // Update LRU order
+          this.cacheAccessOrder = this.cacheAccessOrder.filter(f => f !== filePath);
+          this.cacheAccessOrder.push(filePath);
           return {
             file: filePath,
             issues: cached.issues,
@@ -236,7 +256,7 @@ export class Analyzer {
       const issues: Issue[] = [];
       for (const rule of this.rules) {
         const found = rule.detect(content, filePath)
-          .filter(i => this.getSeverityLevel(i.severity) >= minSeverity);
+          .filter(i => getSeverityLevel(i.severity) >= minSeverity);
         issues.push(...found);
       }
 
@@ -260,7 +280,7 @@ export class Analyzer {
 
       // Cache result
       if (this.options.cache) {
-        this.fileCache.set(filePath, {
+        this.setCache(filePath, {
           hash: calculateFileHash(content),
           issues,
           timestamp: Date.now()
@@ -398,15 +418,6 @@ export class Analyzer {
     }
 
     console.log();
-  }
-
-  private getSeverityLevel(severity: SeverityLevel): number {
-    switch (severity) {
-      case 'error': return 3;
-      case 'warning': return 2;
-      case 'suggestion': return 1;
-      default: return 0;
-    }
   }
 
   /**

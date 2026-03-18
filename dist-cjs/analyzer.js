@@ -45,11 +45,27 @@ const picocolors_1 = __importDefault(require("picocolors"));
 const index_js_1 = require("./rules/index.js");
 const index_js_2 = require("./llm/index.js");
 const index_js_3 = require("./utils/index.js");
+const MAX_CACHE_SIZE = 500; // Max files to cache
 class Analyzer {
+    /**
+     * LRU cache set with size limit
+     */
+    setCache(filePath, cache) {
+        // Remove oldest entries if cache is full
+        while (this.fileCache.size >= MAX_CACHE_SIZE) {
+            const oldest = this.cacheAccessOrder.shift();
+            if (oldest) {
+                this.fileCache.delete(oldest);
+            }
+        }
+        this.fileCache.set(filePath, cache);
+        this.cacheAccessOrder.push(filePath);
+    }
     constructor(options) {
         this.rules = [];
         this.llm = null;
         this.fileCache = new Map();
+        this.cacheAccessOrder = []; // Track access order for LRU
         // File patterns to analyze
         this.patterns = ['**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx', '**/*.vue', '**/*.svelte'];
         this.defaultExclude = ['node_modules/**', 'dist/**', 'build/**', '.next/**', '.git/**', 'coverage/**'];
@@ -169,7 +185,7 @@ class Analyzer {
      */
     async analyzeSequential(files, progress) {
         const results = [];
-        const minSev = this.getSeverityLevel(this.options.severity);
+        const minSev = (0, index_js_3.getSeverityLevel)(this.options.severity);
         for (let i = 0; i < files.length; i++) {
             progress.update(i + 1);
             const result = await this.analyzeFile(files[i], minSev);
@@ -185,7 +201,7 @@ class Analyzer {
     async analyzeParallel(files, progress) {
         const concurrency = Math.min(10, files.length);
         const results = [];
-        const minSev = this.getSeverityLevel(this.options.severity);
+        const minSev = (0, index_js_3.getSeverityLevel)(this.options.severity);
         let completed = 0;
         const worker = async (file) => {
             const result = await this.analyzeFile(file, minSev);
@@ -212,6 +228,9 @@ class Analyzer {
                 const hash = (0, index_js_3.calculateFileHash)(content);
                 const cached = this.fileCache.get(filePath);
                 if (cached && cached.hash === hash) {
+                    // Update LRU order
+                    this.cacheAccessOrder = this.cacheAccessOrder.filter(f => f !== filePath);
+                    this.cacheAccessOrder.push(filePath);
                     return {
                         file: filePath,
                         issues: cached.issues,
@@ -224,7 +243,7 @@ class Analyzer {
             const issues = [];
             for (const rule of this.rules) {
                 const found = rule.detect(content, filePath)
-                    .filter(i => this.getSeverityLevel(i.severity) >= minSeverity);
+                    .filter(i => (0, index_js_3.getSeverityLevel)(i.severity) >= minSeverity);
                 issues.push(...found);
             }
             // Run AI analysis if enabled
@@ -247,7 +266,7 @@ class Analyzer {
             }
             // Cache result
             if (this.options.cache) {
-                this.fileCache.set(filePath, {
+                this.setCache(filePath, {
                     hash: (0, index_js_3.calculateFileHash)(content),
                     issues,
                     timestamp: Date.now()
@@ -372,14 +391,6 @@ class Analyzer {
             }
         }
         console.log();
-    }
-    getSeverityLevel(severity) {
-        switch (severity) {
-            case 'error': return 3;
-            case 'warning': return 2;
-            case 'suggestion': return 1;
-            default: return 0;
-        }
     }
     /**
      * Get rule statistics

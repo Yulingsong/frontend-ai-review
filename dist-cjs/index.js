@@ -48,7 +48,7 @@ const analyzer_js_1 = require("./analyzer.js");
 const index_js_1 = require("./config/index.js");
 const index_js_2 = require("./utils/index.js");
 // Version
-const VERSION = '2.3.0';
+const VERSION = '2.3.1';
 /**
  * Parse CLI arguments
  */
