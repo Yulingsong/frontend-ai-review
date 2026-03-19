@@ -19,6 +19,10 @@ export default defineConfig({
       ]
     },
     testTimeout: 10000,
-    hookTimeout: 10000
+    hookTimeout: 10000,
+    // Disable inspector
+    inspector: {
+      port: -1
+    }
   }
 });

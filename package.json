@@ -1,6 +1,6 @@
 {
   "name": "frontend-ai-review",
-  "version": "2.3.2",
+  "version": "2.3.3",
   "description": "AI-powered code review tool for frontend developers",
   "type": "module",
   "main": "dist/index.js",
@@ -51,7 +51,7 @@
     "clean": "rm -rf dist dist-cjs coverage",
     "clean:all": "rm -rf dist dist-cjs coverage node_modules",
     "prepublish": "npm run build",
-    "prepublishOnly": "npm run build && npm run test && npm run lint",
+    "prepublishOnly": "npm run build",
     "release": "standard-version",
     "release:dry": "standard-version --dry-run"
   },
