@@ -5,15 +5,24 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/Yulingsong/frontend-ai-review/stargazers">
+    <img src="https://img.shields.io/github/stars/Yulingsong/frontend-ai-review" alt="Stars">
+  </a>
+  <a href="https://github.com/Yulingsong/frontend-ai-review/network">
+    <img src="https://img.shields.io/github/forks/Yulingsong/frontend-ai-review" alt="Forks">
+  </a>
   <img src="https://img.shields.io/badge/version-2.3.3-blue" alt="Version">
   <img src="https://img.shields.io/badge/license-MIT-green" alt="License">
   <img src="https://img.shields.io/node/v/frontend-ai-review-orange" alt="Node">
-  <img src="https://img.shields.io/github/stars/Yulingsong/frontend-ai-review" alt="Stars">
-  <img src="https://img.shields.io/npm/dm/frontend-ai-review" alt="Downloads">
 </p>
 
 <p align="center">
   <strong>AI 驱动的代码审查工具 | 自动化代码检查</strong>
+</p>
+
+<p align="center">
+  <a href="https://github.com/Yulingsong/frontend-ai-review/blob/master/README.md">中文</a> •
+  <a href="https://github.com/Yulingsong/frontend-ai-review/blob/master/README.en.md">English</a>
 </p>
 
 ---
@@ -172,6 +181,9 @@ fair . --ai --ai-provider gemini
 - [API 参考](./docs/api.zh-CN.md) - 编程接口
 - [常见问题](./docs/faq.md) - FAQ
 - [使用教程](./docs/tutorial.md) - 详细教程
+- [故障排除](./TROUBLESHOOTING.md) - 问题排查
+- [贡献指南](./CONTRIBUTING.md) - 如何贡献
+- [行为准则](./CODE_OF_CONDUCT.md) - 社区准则
 
 ---
 
