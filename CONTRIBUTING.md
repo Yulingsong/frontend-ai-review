@@ -1,6 +1,22 @@
-# Frontend AI Review 贡献指南
+# Contributing to Frontend AI Review
 
-## 开发环境设置
+感谢你对 Frontend AI Review 项目的兴趣！
+
+## 如何贡献
+
+### 1. 报告问题
+
+如果你发现 bug 或有新功能建议，请先搜索是否已存在相同问题。如果没有，请创建新的 Issue。
+
+### 2. 提交代码
+
+1. Fork 本项目
+2. 创建特性分支 (`git checkout -b feature/your-feature`)
+3. 提交更改 (`git commit -am 'Add some feature'`)
+4. 推送分支 (`git push origin feature/your-feature`)
+5. 创建 Pull Request
+
+### 3. 开发环境
 
 ```bash
 # 克隆项目
@@ -10,48 +26,14 @@ cd frontend-ai-review
 # 安装依赖
 npm install
 
+# 开发模式
+npm run dev
+
 # 运行测试
 npm test
 
-# 开发模式
-npm run dev
-```
-
-## 项目结构
-
-```
-src/
-├── analyzer.ts      # 代码分析器
-├── config/         # 配置模块
-├── fixer.ts        # 代码修复
-├── i18n/          # 国际化
-├── index.ts       # 入口文件
-├── interactive.ts # 交互模块
-├── llm/           # LLM 集成
-├── plugin.ts      # 插件系统
-├── rules/         # 规则集
-├── sarif.ts       # SARIF 格式
-├── types/         # 类型定义
-└── utils/        # 工具函数
-```
-
-## 添加新规则
-
-1. 在 `src/rules/` 创建规则文件
-2. 实现规则逻辑
-3. 添加测试用例
-4. 更新规则索引
-
-## 添加测试
-
-```typescript
-import { describe, it, expect } from 'vitest';
-
-describe('ModuleName', () => {
-  it('should do something', () => {
-    expect(true).toBe(true);
-  });
-});
+# 构建
+npm run build
 ```
 
 ## 代码规范
@@ -59,12 +41,28 @@ describe('ModuleName', () => {
 - 使用 TypeScript
 - 遵循 ESLint 规则
 - 使用 Prettier 格式化
-- 添加测试覆盖
+- 添加必要的测试
 
-## 提交规范
+## 提交信息规范
 
-- `feat:` 新功能
-- `fix:` Bug 修复
-- `docs:` 文档更新
-- `test:` 测试用例
-- `refactor:` 代码重构
+使用清晰的提交信息：
+
+```
+feat: 添加新功能
+fix: 修复 bug
+docs: 更新文档
+style: 代码格式调整
+refactor: 重构代码
+test: 添加测试
+```
+
+## 添加新规则
+
+1. 在 `src/rules/` 目录创建规则文件
+2. 遵循现有规则的代码结构
+3. 添加测试用例
+4. 更新文档
+
+---
+
+感谢你的贡献！ 🎉

@@ -1,6 +1,10 @@
 # Frontend AI Review 🤖
 
 <p align="center">
+  <img src="./logo.svg" alt="Frontend AI Review Logo" width="128" height="128">
+</p>
+
+<p align="center">
   <img src="https://img.shields.io/badge/version-2.3.3-blue" alt="Version">
   <img src="https://img.shields.io/badge/license-MIT-green" alt="License">
   <img src="https://img.shields.io/node/v/frontend-ai-review-orange" alt="Node">
