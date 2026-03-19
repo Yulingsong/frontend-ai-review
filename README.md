@@ -15,6 +15,10 @@
 
 ---
 
+[English](./README.md) | [中文](./docs/README.zh-CN.md)
+
+---
+
 ## ✨ Features
 
 | Feature | Description |
