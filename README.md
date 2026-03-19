@@ -1,98 +1,77 @@
-# Frontend AI Review 🤖
+# Frontend AI Review 中文文档
 
-<p align="center">
-  <img src="https://img.shields.io/badge/version-2.2.0-blue" alt="Version">
-  <img src="https://img.shields.io/badge/license-MIT-green" alt="License">
-  <img src="https://img.shields.io/badge/node-%3E%3D18-orange" alt="Node Version">
-  <a href="https://www.npmjs.com/package/frontend-ai-review">
-    <img src="https://img.shields.io/npm/dm/frontend-ai-review" alt="NPM Downloads">
-  </a>
-</p>
+> AI 驱动的代码审查工具
 
-<p align="center">
-  <strong>AI-powered code review tool for frontend developers</strong>
-</p>
+[English](./README.en.md) | 中文
 
----
+## 什么是 Frontend AI Review？
 
-[English](./README.md) | [中文](./docs/README.zh-CN.md)
+Frontend AI Review 是一个专为前端开发者设计的 AI 代码审查工具。它能够：
+- 自动检查代码问题
+- 支持 React、Vue、TypeScript 等多种框架
+- 提供 AI 智能分析
+- 自动修复可修复的问题
 
----
+## 核心特性
 
-## ✨ Features
+| 特性 | 说明 |
+|------|------|
+| 🔍 多框架支持 | React、Vue、Next.js、Nuxt.js、Svelte |
+| ⚡ 高性能 | 并行分析、增量缓存 |
+| 📊 47+ 规则 | React、Vue、TypeScript，安全，性能等 |
+| 🤖 多 AI 支持 | OpenAI、Anthropic Claude、Google Gemini 等 |
+| 🔧 自动修复 | 自动修复可修复的问题 |
+| 🚀 CI/CD 集成 | 支持 GitHub Actions、GitLab CI、Jenkins |
 
-| Feature | Description |
-|--------|-------------|
-| 🔍 **Multi-Framework** | React, Vue, Next.js, Nuxt.js, Svelte |
-| ⚡ **High Performance** | Parallel analysis, incremental caching |
-| 📊 **47+ Rules** | React, Vue, TypeScript, Security, Performance, Best Practices |
-| 🤖 **Multi AI Support** | OpenAI, Anthropic, Google Gemini, Azure, Cohere, Mistral, Qwen |
-| 🔧 **Auto-Fix** | Automatically fix fixable issues |
-| ⚙️ **CLI Options** | Flexible configuration |
-| 📄 **Config File** | Supports .fairrc.json |
-| 📑 **Multiple Outputs** | Text/JSON/GitHub/SARIF format |
-| 🚀 **CI/CD Integration** | GitHub Actions, GitLab CI, Jenkins |
-| 🧪 **Test Support** | Built-in unit tests |
-| 🌍 **i18n** | English, Chinese, Japanese, Spanish, French, German |
-
----
-
-## 🚀 Quick Start
-
-### Installation
+## 安装
 
 ```bash
-# Install globally with npm
+# 全局安装
 npm install -g frontend-ai-review
 
-# Or use npx
+# 或使用 npx
 npx frontend-ai-review /path/to/project
 ```
 
-### Local Usage
+## 快速开始
 
 ```bash
-# Clone the project
-git clone https://github.com/Yulingsong/frontend-ai-review.git
-cd frontend-ai-review
+# 基本用法
+fair .
 
-# Install dependencies
-npm install
+# 检查特定目录
+fair ./src
 
-# Build
-npm run build
+# 输出 JSON 格式
+fair . -o json
 
-# Run
-node dist/index.js /path/to/project
+# 启用 AI 分析
+fair . --ai
+
+# 自动修复
+fair . --fix
 ```
 
----
+## CLI 选项
 
-## 📖 CLI Options
+| 选项 | 说明 | 示例 |
+|------|------|------|
+| `-o, --output` | 输出格式 | `-o json` |
+| `-s, --severity` | 最小严重程度 | `-s warning` |
+| `-c, --category` | 检查分类 | `-c react,vue` |
+| `-e, --exclude` | 排除文件 | `-e "node_modules/**"` |
+| `-r, --rules` | 指定规则 | `-r react/exhaustive-deps` |
+| `--ai` | 启用 AI 分析 | `--ai` |
+| `--ai-model` | AI 模型 | `--ai-model gpt-4` |
+| `--ai-provider` | AI 提供商 | `--ai-provider anthropic` |
+| `--fix` | 自动修复 | `--fix` |
+| `--parallel` | 并行分析 | `--parallel` |
+| `--cache` | 启用缓存 | `--cache` |
+| `--git` | Git 增量分析 | `--git --staged` |
 
-| Option | Description | Default | Example |
-|--------|-------------|---------|---------|
-| `-o, --output` | Output format | text | `-o json` |
-| `-s, --severity` | Minimum severity | suggestion | `-s warning` |
-| `-c, --category` | Categories | all | `-c react,vue` |
-| `-e, --exclude` | Exclude files | - | `-e "node_modules/**"` |
-| `-r, --rules` | Specific rules | all | `-r react/exhaustive-deps` |
-| `--ai` | Enable AI analysis | false | `--ai` |
-| `--ai-model` | AI model | gpt-4o-mini | `--ai-model gpt-4` |
-| `--ai-provider` | AI provider | openai | `--ai-provider anthropic` |
-| `--fix` | Auto-fix issues | false | `--fix` |
-| `--parallel` | Parallel analysis | false | `--parallel` |
-| `--cache` | Enable caching | false | `--cache` |
-| `--git` | Git incremental | false | `--git --staged` |
-| `-i, --interactive` | Interactive mode | false | `-i` |
-| `--init` | Create config | - | `--init` |
-| `-h` | Show help | - | `-h` |
+## 配置文件
 
----
-
-## 📄 Configuration File
-
-Create `.fairrc.json` in your project root:
+在项目根目录创建 `.fairrc.json`：
 
 ```json
 {
@@ -116,80 +95,61 @@ Create `.fairrc.json` in your project root:
 }
 ```
 
----
+## AI 分析
 
-## 🤖 AI Analysis
-
-Supports multiple AI providers:
+### OpenAI (默认)
 
 ```bash
-# OpenAI (default)
 export OPENAI_API_KEY=sk-your-key
-fair /path/to/project --ai
+fair . --ai
+```
 
-# Anthropic Claude
+### Anthropic Claude
+
+```bash
 export ANTHROPIC_API_KEY=sk-ant-your-key
-fair /path/to/project --ai --ai-provider anthropic
+fair . --ai --ai-provider anthropic
+```
 
-# Google Gemini
+### Google Gemini
+
+```bash
 export GEMINI_API_KEY=your-gemini-key
-fair /path/to/project --ai --ai-provider gemini
-
-# Azure OpenAI
-export AZURE_OPENAI_API_KEY=your-key
-fair /path/to/project --ai --ai-provider azure --azure-endpoint https://your-resource.openai.azure.com
-
-# Cohere
-export COHERE_API_KEY=your-key
-fair /path/to/project --ai --ai-provider cohere
-
-# Mistral
-export MISTRAL_API_KEY=your-key
-fair /path/to/project --ai --ai-provider mistral
-
-# Alibaba Qwen
-export QWEN_API_KEY=your-key
-fair /path/to/project --ai --ai-provider qwen
+fair . --ai --ai-provider gemini
 ```
 
----
+## 自动修复
 
-## 🔧 Auto-Fix
-
-Automatically fix fixable issues:
+使用 `--fix` 自动修复可修复的问题：
 
 ```bash
-fair /path/to/project --fix
+fair . --fix
 ```
 
-### Supported Rules
+支持的自动修复规则：
 
-| Rule | Fix |
-|------|-----|
-| `perf/console-log` | Delete console.log line |
-| `best-practice/no-var` | Replace var with let |
-| `best-practice/prefer-const` | Replace let with const |
+| 规则 | 修复方式 |
+|------|----------|
+| `perf/console-log` | 删除 console.log 行 |
+| `best-practice/no-var` | 将 var 替换为 let |
+| `best-practice/prefer-const` | 将 let 替换为 const |
+| `vue/v-for-key` | 添加 key |
 
----
-
-## ⚡ Performance
+## 性能优化
 
 ```bash
-# Parallel analysis - recommended for large projects
-fair /path/to/project --parallel
+# 并行分析 - 推荐大型项目使用
+fair . --parallel
 
-# Incremental caching - skip unchanged files
-fair /path/to/project --cache
+# 增量缓存 - 跳过未更改的文件
+fair . --cache
 
-# Git-based incremental analysis
-fair /path/to/project --git --staged
-fair /path/to/project --git --branch main
-fair /path/to/project --git --since HEAD~3
+# Git 增量分析
+fair . --git --staged
+fair . --git --branch main
 ```
 
----
-
-## 🚀 CI/CD Integration
+## CI/CD 集成
 
 ### GitHub Actions
 
@@ -212,138 +172,135 @@ jobs:
 
 ### GitLab CI
 
-See [.gitlab-ci/.gitlab-ci.yml](.gitlab-ci/.gitlab-ci.yml)
-
-### Jenkins
-
-See [.jenkins/Jenkinsfile](.jenkins/Jenkinsfile)
-
----
-
-## 📊 Output Example
-
-```
-🤖 Frontend AI Review v2.2.0
-──────────────────────────────────────────────────
-Framework: react
-Severity: suggestion
-Rules: 47 enabled
-
-Found 25 files to analyze
-
-📁 src/App.tsx
-────────────────────────────────────────────────────────────
-🟡 react/exhaustive-deps line 23
-   useEffect dependency array may be incomplete
-
-🔴 security/hardcoded-credentials line 5
-   Hardcoded credentials detected
-
-🔵 perf/console-log line 10 💡 Fixable: Delete this line
-
-📊 Summary
-────────────────────────────────────────────────────────────
-Files: 25 | Analyzed: 25 | Issues: 8
-   Errors: 2
-   Warnings: 8
-   Suggestions: 5
-
-📈 By Category
-   security: 2
-   react: 3
-   best-practice: 3
+```yaml
+code-review:
+  image: node:20
+  script:
+    - npm install -g frontend-ai-review
+    - fair . -o json > gl-ai-report.json
+  artifacts:
+    reports:
+      codequality: gl-ai-report.json
 ```
 
----
+## 规则说明
 
-## 📦 Built-in Rules (47+)
+### React 规则
 
-### 🔴 React (10)
+| 规则 | 说明 | 严重程度 |
+|------|------|----------|
+| `react/exhaustive-deps` | useEffect 依赖数组不完整 | warning |
+| `react/no-array-index-key` | 不应使用数组索引作为 key | warning |
+| `react/hooks-rule-of-hooks` | Hook 必须在组件顶层调用 | error |
+| `react/no-direct-mutation-state` | 不能直接修改 state | error |
+| `react/button-has-type` | button 必须有 type 属性 | suggestion |
+| `react/prop-types` | 应定义 PropTypes | warning |
 
-| Rule ID | Description | Severity |
-|---------|-------------|----------|
-| `react/exhaustive-deps` | useEffect dependency incomplete | warning |
-| `react/no-array-index-key` | No array index as key | warning |
-| `react/hooks-rule-of-hooks` | Hooks must be at top level | error |
-| `react/no-direct-mutation-state` | No direct state mutation | error |
-| `react/button-has-type` | Button type required | suggestion |
-| `react/prop-types` | Prop types required | warning |
+### Vue 规则
 
-### 💚 Vue (6)
+| 规则 | 说明 | 严重程度 |
+|------|------|----------|
+| `vue/v-for-key` | v-for 必须有 key | warning |
+| `vue/v-if-with-v-for` | 不应同时使用 v-if 和 v-for | error |
 
-| Rule ID | Description | Severity |
-|---------|-------------|----------|
-| `vue/v-for-key` | v-for needs key | warning |
-| `vue/v-if-with-v-for` | v-if with v-for | error |
+### TypeScript 规则
 
-### 💙 TypeScript (6)
+| 规则 | 说明 | 严重程度 |
+|------|------|----------|
+| `typescript/no-any` | 不应使用 any 类型 | warning |
+| `typescript/no-unused-vars` | 不应有未使用变量 | warning |
 
-| Rule ID | Description | Severity |
-|---------|-------------|----------|
-| `typescript/no-any` | No any type | warning |
-| `typescript/no-unused-vars` | No unused vars | warning |
+### 安全规则
 
-### 🔒 Security (8)
+| 规则 | 说明 | 严重程度 |
+|------|------|----------|
+| `security/eval` | 不应使用 eval() | error |
+| `security/hardcoded-credentials` | 不应硬编码凭证 | error |
+| `security/sql-injection` | SQL 注入风险 | error |
+| `security/command-injection` | 命令注入风险 | error |
 
-| Rule ID | Description | Severity |
-|---------|-------------|----------|
-| `security/eval` | No eval | error |
-| `security/hardcoded-credentials` | No credentials | error |
-| `security/sql-injection` | SQL injection | error |
-| `security/command-injection` | Command injection | error |
+### 性能规则
 
-### ⚡ Performance (7)
+| 规则 | 说明 | 严重程度 |
+|------|------|----------|
+| `perf/console-log` | 应删除 console.log | suggestion |
+| `perf/anonymous-function` | 避免匿名函数 | suggestion |
 
-| Rule ID | Description | Severity |
-|---------|-------------|----------|
-| `perf/console-log` | Remove console.log | suggestion |
-| `perf/anonymous-function` | No anonymous functions | suggestion |
+### 最佳实践规则
 
-### 📝 Best Practice (10)
+| 规则 | 说明 | 严重程度 |
+|------|------|----------|
+| `best-practice/no-magic-numbers` | 不应使用魔法数字 | suggestion |
+| `best-practice/import-order` | import 顺序不规范 | suggestion |
 
-| Rule ID | Description | Severity |
-|---------|-------------|----------|
-| `best-practice/no-magic-numbers` | No magic numbers | suggestion |
-| `best-practice/import-order` | Import order | suggestion |
+## 常见问题
 
----
+### 1. 安装失败
 
-## 🛠️ Development
+**问题**: 提示权限错误
+
+**解决**:
+```bash
+sudo npm install -g frontend-ai-review
+```
+
+### 2. 找不到 `fair` 命令
+
+**解决**:
+```bash
+npm list -g frontend-ai-review
+npx fair .
+```
+
+### 3. AI 分析失败
+
+**问题**: AI 分析不工作
+
+**解决**:
+1. 确保已设置 API Key
+2. 检查网络连接
+3. 尝试不使用 AI: `fair .` (不带 `--ai`)
+
+### 4. 检查大项目很慢
+
+**解决**:
+```bash
+fair . --parallel
+fair . --cache
+fair . --git --staged
+```
+
+## 开发指南
 
 ```bash
-# Clone
+# 克隆项目
 git clone https://github.com/Yulingsong/frontend-ai-review.git
 cd frontend-ai-review
 
-# Install
+# 安装依赖
 npm install
 
-# Dev mode
+# 开发模式
 npm run dev
 
-# Build
+# 构建
 npm run build
 
-# Test
-npm run test
+# 测试
+npm test
 ```
 
----
+## 相关链接
 
-## 🤝 Contributing
-
-Issues and Pull Requests are welcome!
-
----
-
-## 📝 License
-
-MIT License
+- [GitHub](https://github.com/Yulingsong/frontend-ai-review)
+- [问题反馈](https://github.com/Yulingsong/frontend-ai-review/issues)
 
 ---
 
-## 🏆 Credits
+## 更多文档
 
-- [Babel](https://babeljs.io/) - JavaScript compiler
-- [Picocolors](https://github.com/alexeyraspopov/picocolors) - Terminal colors
-- [Glob](https://github.com/isaacs/node-glob) - File matching
+- [配置详解](./docs/config.md) - 配置文件选项说明
+- [规则详解](./docs/rules.md) - 所有规则详细说明
+- [API 参考](./docs/api.md) - 编程接口
+- [常见问题](./docs/faq.md) - FAQ
+- [使用教程](./docs/tutorial.md) - 详细教程
