@@ -48,7 +48,7 @@ const analyzer_js_1 = require("./analyzer.js");
 const index_js_1 = require("./config/index.js");
 const index_js_2 = require("./utils/index.js");
 // Version
-const VERSION = '2.3.1';
+const VERSION = '2.3.3';
 // CLI argument validators
 const VALID_OUTPUT = ['text', 'json', 'github'];
 const VALID_SEVERITY = ['error', 'warning', 'suggestion'];

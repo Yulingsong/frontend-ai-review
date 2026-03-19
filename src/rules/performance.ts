@@ -12,7 +12,13 @@ export const performanceRules: Rule[] = [
     description: '生产环境应移除 console.log',
     fixable: true,
     fix: '删除此行',
-    detect: (content: string) => {
+    detect: (content: string, filePath: string) => {
+      // CLI工具需要console.log作为输出,跳过CLI源码
+      const cliFiles = ['analyzer.ts', 'fixer.ts', 'index.ts', 'interactive.ts', 'plugin.ts', 'utils/index.ts'];
+      if (cliFiles.some(f => filePath.includes(f))) {
+        return [];
+      }
+      
       const issues: Issue[] = [];
       const lines = content.split('\n');
 

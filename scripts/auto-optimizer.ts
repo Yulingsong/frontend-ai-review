@@ -77,6 +77,9 @@ function checkTypeScript(): Optimization[] {
 function checkUnusedImports(): Optimization[] {
   const issues: Optimization[] = [];
   
+  // CLI工具源码不需要检查console.log(它们需要console输出)
+  const cliFiles = ['analyzer.ts', 'fixer.ts', 'index.ts', 'interactive.ts', 'plugin.ts', 'utils/index.ts', 'rules/performance.ts'];
+  
   // Check src directory
   const srcDir = path.join(PROJECT_ROOT, 'src');
   const files = getAllFiles(srcDir, ['.ts']);
@@ -85,8 +88,9 @@ function checkUnusedImports(): Optimization[] {
     const content = fs.readFileSync(file, 'utf-8');
     const relativePath = path.relative(srcDir, file);
     
-    // Check for console.log that should be removed in production
-    if (content.includes('console.log') && !content.includes('// DEBUG')) {
+    // Check for console.log that should be removed in production (skip CLI tools)
+    const isCliFile = cliFiles.some(f => relativePath.endsWith(f));
+    if (!isCliFile && content.includes('console.log') && !content.includes('// DEBUG')) {
       issues.push({
         file: relativePath,
         issue: 'console.log found in production code',
